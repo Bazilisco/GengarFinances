@@ -42,7 +42,7 @@ export function BalanceCard({ title, amount, icon, type }: BalanceCardProps) {
     <motion.div
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
-      className={`${getCardStyles()} border-2 rounded-xl p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group`}
+      className={`${getCardStyles()} border-2 rounded-xl p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group relative`}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="text-muted-foreground text-sm font-medium">{title}</div>
