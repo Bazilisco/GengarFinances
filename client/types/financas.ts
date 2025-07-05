@@ -5,6 +5,8 @@ export interface Despesa {
   categoria: CategoriaDespesa;
   data: Date;
   criadoEm: Date;
+  observacao?: string;
+  comprovante?: string; // Base64 da imagem
 }
 
 export interface Ganho {
@@ -14,6 +16,48 @@ export interface Ganho {
   categoria: CategoriaGanho;
   data: Date;
   criadoEm: Date;
+  observacao?: string;
+  comprovante?: string; // Base64 da imagem
+}
+
+export interface Meta {
+  id: string;
+  titulo: string;
+  valorAlvo: number;
+  valorAtual: number;
+  dataInicio: Date;
+  dataFim: Date;
+  ativa: boolean;
+  criadoEm: Date;
+}
+
+export interface LimiteCategoria {
+  id: string;
+  categoria: CategoriaDespesa;
+  valorLimite: number;
+  ativo: boolean;
+  mes: number;
+  ano: number;
+  criadoEm: Date;
+}
+
+export interface ConfiguracaoSeguranca {
+  pinAtivado: boolean;
+  pin?: string;
+  perguntaSeguranca?: string;
+  respostaSeguranca?: string;
+}
+
+export interface Transacao {
+  id: string;
+  tipo: "ganho" | "despesa";
+  valor: number;
+  descricao: string;
+  categoria: CategoriaDespesa | CategoriaGanho;
+  data: Date;
+  criadoEm: Date;
+  observacao?: string;
+  comprovante?: string;
 }
 
 export type CategoriaDespesa =
@@ -37,10 +81,21 @@ export type CategoriaGanho =
 export interface DadosFinanceiros {
   despesas: Despesa[];
   ganhos: Ganho[];
-  capitalBruto: number; // Total de ganhos do mês
-  totalDespesas: number; // Total de gastos do mês
-  capitalLiquido: number; // Bruto - Despesas
-  saldoFinal: number; // O que sobrou para gastar livremente
+  metas: Meta[];
+  limites: LimiteCategoria[];
+  configuracaoSeguranca: ConfiguracaoSeguranca;
+  capitalBruto: number;
+  totalDespesas: number;
+  capitalLiquido: number;
+  saldoFinal: number;
+}
+
+export interface FiltroExtrato {
+  periodo: "7dias" | "30dias" | "personalizado";
+  dataInicio?: Date;
+  dataFim?: Date;
+  tipo?: "todos" | "ganho" | "despesa";
+  categoria?: string;
 }
 
 export interface DadosGrafico {
@@ -87,4 +142,24 @@ export const CORES_CATEGORIAS_GANHO: Record<CategoriaGanho, string> = {
   vendas: "#FF9800",
   freelance: "#9C27B0",
   outros: "#607D8B",
+};
+
+export const NOMES_CATEGORIAS_DESPESA: Record<CategoriaDespesa, string> = {
+  alimentacao: "Alimentação",
+  transporte: "Transporte",
+  lazer: "Lazer",
+  compras: "Compras",
+  contas: "Contas",
+  saude: "Saúde",
+  educacao: "Educação",
+  outros: "Outros",
+};
+
+export const NOMES_CATEGORIAS_GANHO: Record<CategoriaGanho, string> = {
+  salario: "Salário",
+  extra: "Extra",
+  investimentos: "Investimentos",
+  vendas: "Vendas",
+  freelance: "Freelance",
+  outros: "Outros",
 };

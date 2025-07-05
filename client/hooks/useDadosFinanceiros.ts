@@ -2,9 +2,14 @@ import { useState, useEffect } from "react";
 import {
   Despesa,
   Ganho,
+  Meta,
+  LimiteCategoria,
+  ConfiguracaoSeguranca,
   DadosFinanceiros,
   CategoriaDespesa,
   CategoriaGanho,
+  Transacao,
+  FiltroExtrato,
 } from "../types/financas";
 
 const CHAVE_ARMAZENAMENTO = "gengar-financas-dados";
@@ -18,6 +23,7 @@ const despesasIniciais: Despesa[] = [
     categoria: "alimentacao",
     data: new Date("2024-01-15"),
     criadoEm: new Date("2024-01-15"),
+    observacao: "Restaurante perto do trabalho",
   },
   {
     id: "2",
@@ -48,6 +54,23 @@ const ganhosIniciais: Ganho[] = [
   },
 ];
 
+const metasIniciais: Meta[] = [
+  {
+    id: "1",
+    titulo: "Economizar para casa assombrada",
+    valorAlvo: 5000,
+    valorAtual: 1200,
+    dataInicio: new Date("2024-01-01"),
+    dataFim: new Date("2024-12-31"),
+    ativa: true,
+    criadoEm: new Date("2024-01-01"),
+  },
+];
+
+const configuracaoSegurancaInicial: ConfiguracaoSeguranca = {
+  pinAtivado: false,
+};
+
 export function useDadosFinanceiros() {
   const [dados, setDados] = useState<DadosFinanceiros>(() => {
     const dadosSalvos = localStorage.getItem(CHAVE_ARMAZENAMENTO);
@@ -64,12 +87,25 @@ export function useDadosFinanceiros() {
         data: new Date(g.data),
         criadoEm: new Date(g.criadoEm),
       }));
+      parsed.metas = (parsed.metas || []).map((m: any) => ({
+        ...m,
+        dataInicio: new Date(m.dataInicio),
+        dataFim: new Date(m.dataFim),
+        criadoEm: new Date(m.criadoEm),
+      }));
+      parsed.limites = (parsed.limites || []).map((l: any) => ({
+        ...l,
+        criadoEm: new Date(l.criadoEm),
+      }));
       return parsed;
     }
 
     return {
       despesas: despesasIniciais,
       ganhos: ganhosIniciais,
+      metas: metasIniciais,
+      limites: [],
+      configuracaoSeguranca: configuracaoSegurancaInicial,
       capitalBruto: 0,
       totalDespesas: 0,
       capitalLiquido: 0,
@@ -100,7 +136,7 @@ export function useDadosFinanceiros() {
       0,
     );
     const capitalLiquido = capitalBruto - totalDespesas;
-    const saldoFinal = capitalLiquido; // Por enquanto igual ao líquido
+    const saldoFinal = capitalLiquido;
 
     setDados((prev) => ({
       ...prev,
@@ -110,6 +146,11 @@ export function useDadosFinanceiros() {
       saldoFinal,
     }));
   }, [dados.ganhos, dados.despesas]);
+
+  // Verificar alertas de limite
+  useEffect(() => {
+    verificarAlertas();
+  }, [dados.despesas, dados.limites]);
 
   // Salvar no localStorage sempre que os dados mudarem
   useEffect(() => {
@@ -142,6 +183,53 @@ export function useDadosFinanceiros() {
     }));
   };
 
+  const adicionarMeta = (meta: Omit<Meta, "id" | "criadoEm">) => {
+    const novaMeta: Meta = {
+      ...meta,
+      id: Date.now().toString(),
+      criadoEm: new Date(),
+    };
+
+    setDados((prev) => ({
+      ...prev,
+      metas: [novaMeta, ...prev.metas],
+    }));
+  };
+
+  const atualizarMeta = (id: string, metaAtualizada: Partial<Meta>) => {
+    setDados((prev) => ({
+      ...prev,
+      metas: prev.metas.map((meta) =>
+        meta.id === id ? { ...meta, ...metaAtualizada } : meta,
+      ),
+    }));
+  };
+
+  const adicionarLimiteCategoria = (
+    limite: Omit<LimiteCategoria, "id" | "criadoEm">,
+  ) => {
+    const novoLimite: LimiteCategoria = {
+      ...limite,
+      id: Date.now().toString(),
+      criadoEm: new Date(),
+    };
+
+    setDados((prev) => ({
+      ...prev,
+      limites: [
+        ...prev.limites.filter(
+          (l) =>
+            !(
+              l.categoria === limite.categoria &&
+              l.mes === limite.mes &&
+              l.ano === limite.ano
+            ),
+        ),
+        novoLimite,
+      ],
+    }));
+  };
+
   const excluirDespesa = (id: string) => {
     setDados((prev) => ({
       ...prev,
@@ -154,6 +242,126 @@ export function useDadosFinanceiros() {
       ...prev,
       ganhos: prev.ganhos.filter((g) => g.id !== id),
     }));
+  };
+
+  const excluirMeta = (id: string) => {
+    setDados((prev) => ({
+      ...prev,
+      metas: prev.metas.filter((m) => m.id !== id),
+    }));
+  };
+
+  const atualizarConfiguracaoSeguranca = (
+    config: Partial<ConfiguracaoSeguranca>,
+  ) => {
+    setDados((prev) => ({
+      ...prev,
+      configuracaoSeguranca: { ...prev.configuracaoSeguranca, ...config },
+    }));
+  };
+
+  const obterTransacoesFiltradas = (filtro: FiltroExtrato): Transacao[] => {
+    let dataInicio: Date;
+    let dataFim: Date = new Date();
+
+    // Determinar período
+    switch (filtro.periodo) {
+      case "7dias":
+        dataInicio = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case "30dias":
+        dataInicio = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      case "personalizado":
+        dataInicio = filtro.dataInicio || new Date(0);
+        dataFim = filtro.dataFim || new Date();
+        break;
+      default:
+        dataInicio = new Date(0);
+    }
+
+    // Combinar todas as transações
+    const todasTransacoes: Transacao[] = [
+      ...dados.despesas.map((despesa) => ({
+        id: despesa.id,
+        tipo: "despesa" as const,
+        valor: despesa.valor,
+        descricao: despesa.descricao,
+        categoria: despesa.categoria,
+        data: despesa.data,
+        criadoEm: despesa.criadoEm,
+        observacao: despesa.observacao,
+        comprovante: despesa.comprovante,
+      })),
+      ...dados.ganhos.map((ganho) => ({
+        id: ganho.id,
+        tipo: "ganho" as const,
+        valor: ganho.valor,
+        descricao: ganho.descricao,
+        categoria: ganho.categoria,
+        data: ganho.data,
+        criadoEm: ganho.criadoEm,
+        observacao: ganho.observacao,
+        comprovante: ganho.comprovante,
+      })),
+    ];
+
+    // Aplicar filtros
+    return todasTransacoes
+      .filter((transacao) => {
+        const dataTransacao = new Date(transacao.data);
+        return dataTransacao >= dataInicio && dataTransacao <= dataFim;
+      })
+      .filter((transacao) => {
+        if (filtro.tipo && filtro.tipo !== "todos") {
+          return transacao.tipo === filtro.tipo;
+        }
+        return true;
+      })
+      .filter((transacao) => {
+        if (filtro.categoria) {
+          return transacao.categoria === filtro.categoria;
+        }
+        return true;
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime(),
+      );
+  };
+
+  const verificarAlertas = () => {
+    const mesAtual = new Date().getMonth();
+    const anoAtual = new Date().getFullYear();
+
+    dados.limites
+      .filter(
+        (limite) =>
+          limite.ativo && limite.mes === mesAtual && limite.ano === anoAtual,
+      )
+      .forEach((limite) => {
+        const totalGastoCategoria = dados.despesas
+          .filter(
+            (d) =>
+              d.categoria === limite.categoria &&
+              d.data.getMonth() === mesAtual &&
+              d.data.getFullYear() === anoAtual,
+          )
+          .reduce((sum, d) => sum + d.valor, 0);
+
+        if (totalGastoCategoria > limite.valorLimite) {
+          // Emitir alerta
+          if (
+            "Notification" in window &&
+            Notification.permission === "granted"
+          ) {
+            new Notification("🚨 Limite Ultrapassado!", {
+              body: `Você ultrapassou o limite de R$ ${limite.valorLimite} para ${limite.categoria}. Total gasto: R$ ${totalGastoCategoria.toFixed(2)}`,
+              icon: "/placeholder.svg",
+            });
+          }
+        }
+      });
   };
 
   const obterDespesasPorCategoria = () => {
@@ -208,6 +416,14 @@ export function useDadosFinanceiros() {
     return categoriaTotais;
   };
 
+  const obterTop3CategoriasDespesas = () => {
+    const categorias = obterDespesasPorCategoria();
+    return Object.entries(categorias)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3)
+      .filter(([, valor]) => valor > 0);
+  };
+
   const obterDadosMensais = () => {
     const meses = [
       "Jan",
@@ -255,7 +471,7 @@ export function useDadosFinanceiros() {
     const dadosParaExportar = {
       ...dados,
       dataExportacao: new Date().toISOString(),
-      versao: "1.0",
+      versao: "2.0",
     };
 
     const blob = new Blob([JSON.stringify(dadosParaExportar, null, 2)], {
@@ -272,6 +488,39 @@ export function useDadosFinanceiros() {
     URL.revokeObjectURL(url);
   };
 
+  const exportarCSV = (transacoes: Transacao[], nomeArquivo: string) => {
+    const headers = [
+      "Data",
+      "Tipo",
+      "Descrição",
+      "Categoria",
+      "Valor",
+      "Observação",
+    ];
+    const linhas = transacoes.map((t) => [
+      t.data.toLocaleDateString("pt-BR"),
+      t.tipo === "ganho" ? "Entrada" : "Saída",
+      t.descricao,
+      t.categoria,
+      t.valor.toFixed(2),
+      t.observacao || "",
+    ]);
+
+    const csvContent = [headers, ...linhas]
+      .map((linha) => linha.map((campo) => `"${campo}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${nomeArquivo}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const importarDados = (arquivo: File): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -279,12 +528,10 @@ export function useDadosFinanceiros() {
         try {
           const dadosImportados = JSON.parse(e.target?.result as string);
 
-          // Validar estrutura dos dados
           if (!dadosImportados.despesas || !dadosImportados.ganhos) {
             throw new Error("Arquivo inválido");
           }
 
-          // Converter datas
           dadosImportados.despesas = dadosImportados.despesas.map((d: any) => ({
             ...d,
             data: new Date(d.data),
@@ -297,7 +544,30 @@ export function useDadosFinanceiros() {
             criadoEm: new Date(g.criadoEm),
           }));
 
-          setDados(dadosImportados);
+          if (dadosImportados.metas) {
+            dadosImportados.metas = dadosImportados.metas.map((m: any) => ({
+              ...m,
+              dataInicio: new Date(m.dataInicio),
+              dataFim: new Date(m.dataFim),
+              criadoEm: new Date(m.criadoEm),
+            }));
+          }
+
+          if (dadosImportados.limites) {
+            dadosImportados.limites = dadosImportados.limites.map((l: any) => ({
+              ...l,
+              criadoEm: new Date(l.criadoEm),
+            }));
+          }
+
+          setDados({
+            ...dadosImportados,
+            metas: dadosImportados.metas || [],
+            limites: dadosImportados.limites || [],
+            configuracaoSeguranca:
+              dadosImportados.configuracaoSeguranca ||
+              configuracaoSegurancaInicial,
+          });
           resolve(true);
         } catch (error) {
           reject(error);
@@ -311,12 +581,20 @@ export function useDadosFinanceiros() {
     dados,
     adicionarDespesa,
     adicionarGanho,
+    adicionarMeta,
+    atualizarMeta,
+    excluirMeta,
+    adicionarLimiteCategoria,
     excluirDespesa,
     excluirGanho,
+    atualizarConfiguracaoSeguranca,
+    obterTransacoesFiltradas,
     obterDespesasPorCategoria,
     obterGanhosPorCategoria,
+    obterTop3CategoriasDespesas,
     obterDadosMensais,
     exportarDados,
+    exportarCSV,
     importarDados,
   };
 }
