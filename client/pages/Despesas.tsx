@@ -52,6 +52,8 @@ export default function Despesas() {
     descricao: "",
     categoria: "outros" as CategoriaDespesa,
     data: new Date().toISOString().split("T")[0],
+    observacao: "",
+    comprovante: undefined as string | undefined,
   });
 
   const [carregando, setCarregando] = useState(false);
@@ -99,6 +101,8 @@ export default function Despesas() {
         descricao: "",
         categoria: "outros",
         data: new Date().toISOString().split("T")[0],
+        observacao: "",
+        comprovante: undefined,
       });
 
       setMensagem("Despesa adicionada com sucesso! 👻");
