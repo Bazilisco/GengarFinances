@@ -97,19 +97,6 @@ export function GraficosDashboard() {
                     },
                   ]}
                   height={300}
-                  slotProps={{
-                    legend: {
-                      direction: "column",
-                      position: { vertical: "middle", horizontal: "right" },
-                      itemMarkWidth: 12,
-                      itemMarkHeight: 12,
-                      itemGap: 8,
-                      labelStyle: {
-                        fontSize: 12,
-                        fill: "white",
-                      },
-                    },
-                  }}
                 />
               </Box>
             )}
@@ -160,19 +147,6 @@ export function GraficosDashboard() {
                     },
                   ]}
                   height={300}
-                  slotProps={{
-                    legend: {
-                      direction: "column",
-                      position: { vertical: "middle", horizontal: "right" },
-                      itemMarkWidth: 12,
-                      itemMarkHeight: 12,
-                      itemGap: 8,
-                      labelStyle: {
-                        fontSize: 12,
-                        fill: "white",
-                      },
-                    },
-                  }}
                 />
               </Box>
             )}
@@ -202,18 +176,10 @@ export function GraficosDashboard() {
                   {
                     scaleType: "band",
                     dataKey: "mes",
-                    tickLabelStyle: {
-                      fill: "white",
-                      fontSize: 12,
-                    },
                   },
                 ]}
                 yAxis={[
                   {
-                    tickLabelStyle: {
-                      fill: "white",
-                      fontSize: 12,
-                    },
                     valueFormatter: (value) =>
                       new Intl.NumberFormat("pt-BR", {
                         style: "currency",
@@ -235,19 +201,6 @@ export function GraficosDashboard() {
                   },
                 ]}
                 height={300}
-                slotProps={{
-                  legend: {
-                    direction: "row",
-                    position: { vertical: "top", horizontal: "middle" },
-                    itemMarkWidth: 12,
-                    itemMarkHeight: 12,
-                    itemGap: 16,
-                    labelStyle: {
-                      fontSize: 12,
-                      fill: "white",
-                    },
-                  },
-                }}
               />
             </Box>
           </CardContent>
