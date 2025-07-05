@@ -1,47 +1,60 @@
 import { useState, useEffect } from "react";
+import { Box } from "@mui/material";
 import { LoadingScreen } from "../components/gengar/LoadingScreen";
-import { Navigation } from "../components/navigation/Navigation";
-import { Dashboard } from "../components/finance/Dashboard";
+import { NavegacaoPrincipal } from "../components/navegacao/NavegacaoPrincipal";
+import { VisaoGeral } from "../components/dashboard/VisaoGeral";
 
 export default function Index() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    // Simulate loading for dramatic effect
+    // Simular carregamento para efeito dramático
     const timer = setTimeout(() => {
-      setIsLoading(false);
+      setCarregando(false);
     }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading) {
-    return <LoadingScreen message="Summoning your financial ghosts..." />;
+  if (carregando) {
+    return <LoadingScreen message="Invocando seus fantasmas financeiros..." />;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#0a0a0a" }}>
+      <NavegacaoPrincipal />
 
-      <main className="pt-20 md:pt-24 pb-20 md:pb-8">
-        <Dashboard />
+      <main>
+        <VisaoGeral />
       </main>
 
-      {/* Floating ghost particles background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-10">
-        {[...Array(8)].map((_, i) => (
-          <div
+      {/* Partículas fantasma flutuantes de fundo */}
+      <Box
+        sx={{
+          position: "fixed",
+          inset: 0,
+          overflow: "hidden",
+          pointerEvents: "none",
+          zIndex: 1,
+        }}
+      >
+        {[...Array(12)].map((_, i) => (
+          <Box
             key={i}
-            className="absolute w-2 h-2 bg-primary/10 rounded-full animate-float"
-            style={{
+            sx={{
+              position: "absolute",
+              width: "8px",
+              height: "8px",
+              backgroundColor: "rgba(150, 84, 255, 0.1)",
+              borderRadius: "50%",
+              animation: "float 4s ease-in-out infinite",
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
+              animationDelay: `${Math.random() * 4}s`,
             }}
           />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
