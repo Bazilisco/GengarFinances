@@ -142,85 +142,78 @@ export function TransacoesRecentes() {
                       </Box>
                     </ListItemIcon>
 
-                    <ListItemText
-                      primary={
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          flexWrap: "wrap",
+                          mb: 0.5,
+                        }}
+                      >
+                        <Typography
+                          component="span"
+                          color="white"
+                          fontWeight="medium"
+                        >
+                          {transacao.descricao}
+                        </Typography>
                         <Box
                           sx={{
                             display: "flex",
                             alignItems: "center",
-                            gap: 1,
-                            flexWrap: "wrap",
+                            gap: 0.5,
                           }}
                         >
-                          <Box color="white" fontWeight="medium">
-                            {transacao.descricao}
-                          </Box>
-                          <Box
+                          <span style={{ fontSize: 16 }}>
+                            {transacao.tipo === "ganho"
+                              ? ICONES_CATEGORIAS_GANHO[transacao.categoria]
+                              : ICONES_CATEGORIAS_DESPESA[transacao.categoria]}
+                          </span>
+                          <Chip
+                            label={transacao.categoria}
+                            size="small"
                             sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 0.5,
-                            }}
-                          >
-                            <span style={{ fontSize: 16 }}>
-                              {transacao.tipo === "ganho"
-                                ? ICONES_CATEGORIAS_GANHO[transacao.categoria]
-                                : ICONES_CATEGORIAS_DESPESA[
-                                    transacao.categoria
-                                  ]}
-                            </span>
-                            <Chip
-                              label={transacao.categoria}
-                              size="small"
-                              sx={{
-                                backgroundColor:
-                                  transacao.tipo === "ganho"
-                                    ? "rgba(76, 175, 80, 0.2)"
-                                    : "rgba(244, 67, 54, 0.2)",
-                                color: "white",
-                                fontSize: 11,
-                              }}
-                            />
-                          </Box>
-                        </Box>
-                      }
-                      secondary={
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            mt: 0.5,
-                          }}
-                        >
-                          <Box
-                            component="span"
-                            sx={{
-                              fontSize: 12,
-                              color: "rgba(255,255,255,0.7)",
-                            }}
-                          >
-                            {format(new Date(transacao.data), "dd MMM yyyy", {
-                              locale: ptBR,
-                            })}
-                          </Box>
-                          <Box
-                            component="span"
-                            sx={{
-                              fontSize: 14,
-                              fontWeight: "bold",
-                              color:
+                              backgroundColor:
                                 transacao.tipo === "ganho"
-                                  ? "#4CAF50"
-                                  : "#F44336",
+                                  ? "rgba(76, 175, 80, 0.2)"
+                                  : "rgba(244, 67, 54, 0.2)",
+                              color: "white",
+                              fontSize: 11,
                             }}
-                          >
-                            {transacao.tipo === "ganho" ? "+" : "-"}
-                            {formatarMoeda(transacao.valor)}
-                          </Box>
+                          />
                         </Box>
-                      }
-                    />
+                      </Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          color="rgba(255,255,255,0.7)"
+                        >
+                          {format(new Date(transacao.data), "dd MMM yyyy", {
+                            locale: ptBR,
+                          })}
+                        </Typography>
+                        <Typography
+                          component="span"
+                          variant="body1"
+                          fontWeight="bold"
+                          color={
+                            transacao.tipo === "ganho" ? "#4CAF50" : "#F44336"
+                          }
+                        >
+                          {transacao.tipo === "ganho" ? "+" : "-"}
+                          {formatarMoeda(transacao.valor)}
+                        </Typography>
+                      </Box>
+                    </Box>
 
                     <ListItemSecondaryAction>
                       <IconButton
