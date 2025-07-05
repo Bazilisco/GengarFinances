@@ -260,6 +260,235 @@ export function VisaoGeral() {
         </Card>
       </motion.div>
 
+      {/* Alertas e Metas */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {/* Alertas de Limite */}
+        {alertasPendentes.length > 0 && (
+          <Grid item xs={12}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Alert
+                severity="warning"
+                icon={<WarningIcon />}
+                action={
+                  <Button
+                    component={Link}
+                    to="/configuracoes"
+                    color="inherit"
+                    size="small"
+                  >
+                    Configurar
+                  </Button>
+                }
+                sx={{
+                  backgroundColor: "rgba(255, 152, 0, 0.1)",
+                  color: "#FF9800",
+                  border: "1px solid rgba(255, 152, 0, 0.2)",
+                  "& .MuiAlert-icon": { color: "#FF9800" },
+                }}
+              >
+                <Typography variant="h6" gutterBottom>
+                  🚨 {alertasPendentes.length} limite(s) ultrapassado(s)!
+                </Typography>
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                  {alertasPendentes.map((limite) => (
+                    <Chip
+                      key={limite.id}
+                      label={`${NOMES_CATEGORIAS_DESPESA[limite.categoria]}: ${formatarMoeda(despesasAtuas[limite.categoria])}`}
+                      color="warning"
+                      size="small"
+                    />
+                  ))}
+                </Box>
+              </Alert>
+            </motion.div>
+          </Grid>
+        )}
+
+        {/* Top 3 Categorias */}
+        <Grid item xs={12} md={6}>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Card
+              sx={{
+                background:
+                  "linear-gradient(135deg, rgba(150, 84, 255, 0.1), rgba(150, 84, 255, 0.05))",
+                border: "1px solid rgba(150, 84, 255, 0.2)",
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" color="white" gutterBottom>
+                  🔥 Top 3 Categorias que Mais Gastam
+                </Typography>
+                {top3Categorias.length === 0 ? (
+                  <Typography color="rgba(255,255,255,0.7)">
+                    Nenhuma despesa registrada este mês.
+                  </Typography>
+                ) : (
+                  <Box sx={{ space: 1 }}>
+                    {top3Categorias.map(([categoria, valor], index) => (
+                      <Box
+                        key={categoria}
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          py: 1,
+                          borderBottom:
+                            index < top3Categorias.length - 1
+                              ? "1px solid rgba(150, 84, 255, 0.1)"
+                              : "none",
+                        }}
+                      >
+                        <Typography color="white">
+                          {index + 1}º{" "}
+                          {
+                            NOMES_CATEGORIAS_DESPESA[
+                              categoria as keyof typeof NOMES_CATEGORIAS_DESPESA
+                            ]
+                          }
+                        </Typography>
+                        <Typography color="#F44336" fontWeight="bold">
+                          {formatarMoeda(valor)}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </Grid>
+
+        {/* Metas Ativas */}
+        <Grid item xs={12} md={6}>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Card
+              sx={{
+                background:
+                  "linear-gradient(135deg, rgba(150, 84, 255, 0.1), rgba(150, 84, 255, 0.05))",
+                border: "1px solid rgba(150, 84, 255, 0.2)",
+              }}
+            >
+              <CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2,
+                  }}
+                >
+                  <Typography variant="h6" color="white">
+                    🎯 Metas Ativas ({metasAtivas.length})
+                  </Typography>
+                  <Button
+                    component={Link}
+                    to="/metas"
+                    size="small"
+                    sx={{ color: "#9654FF" }}
+                  >
+                    Ver Todas
+                  </Button>
+                </Box>
+
+                {metasAtivas.length === 0 ? (
+                  <Box sx={{ textAlign: "center", py: 2 }}>
+                    <Typography color="rgba(255,255,255,0.7)" gutterBottom>
+                      Nenhuma meta ativa.
+                    </Typography>
+                    <Button
+                      component={Link}
+                      to="/metas"
+                      variant="outlined"
+                      size="small"
+                      startIcon={<MetaIcon />}
+                      sx={{
+                        borderColor: "rgba(150, 84, 255, 0.5)",
+                        color: "#9654FF",
+                        "&:hover": {
+                          borderColor: "#9654FF",
+                          backgroundColor: "rgba(150, 84, 255, 0.1)",
+                        },
+                      }}
+                    >
+                      Criar Meta
+                    </Button>
+                  </Box>
+                ) : (
+                  <Box sx={{ space: 2 }}>
+                    {metasAtivas.slice(0, 3).map((meta) => {
+                      const progresso = Math.min(
+                        (meta.valorAtual / meta.valorAlvo) * 100,
+                        100,
+                      );
+                      return (
+                        <Box key={meta.id} sx={{ mb: 2 }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              mb: 0.5,
+                            }}
+                          >
+                            <Typography
+                              variant="body2"
+                              color="white"
+                              fontWeight="medium"
+                            >
+                              {meta.titulo}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="rgba(255,255,255,0.7)"
+                            >
+                              {progresso.toFixed(0)}%
+                            </Typography>
+                          </Box>
+                          <LinearProgress
+                            variant="determinate"
+                            value={progresso}
+                            sx={{
+                              height: 6,
+                              borderRadius: 3,
+                              backgroundColor: "rgba(255,255,255,0.1)",
+                              "& .MuiLinearProgress-bar": {
+                                borderRadius: 3,
+                                background:
+                                  progresso >= 100
+                                    ? "linear-gradient(90deg, #FFC107, #FF9800)"
+                                    : "linear-gradient(90deg, #9654FF, #7C2AFF)",
+                              },
+                            }}
+                          />
+                          <Typography
+                            variant="caption"
+                            color="rgba(255,255,255,0.7)"
+                          >
+                            {formatarMoeda(meta.valorAtual)} de{" "}
+                            {formatarMoeda(meta.valorAlvo)}
+                          </Typography>
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </Grid>
+      </Grid>
+
       {/* Gráficos */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
