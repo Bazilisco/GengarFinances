@@ -52,6 +52,8 @@ export default function Ganhos() {
     descricao: "",
     categoria: "salario" as CategoriaGanho,
     data: new Date().toISOString().split("T")[0],
+    observacao: "",
+    comprovante: undefined as string | undefined,
   });
 
   const [carregando, setCarregando] = useState(false);
@@ -97,6 +99,8 @@ export default function Ganhos() {
         descricao: "",
         categoria: "salario",
         data: new Date().toISOString().split("T")[0],
+        observacao: "",
+        comprovante: undefined,
       });
 
       setMensagem("Ganho adicionado com sucesso! 💰");
