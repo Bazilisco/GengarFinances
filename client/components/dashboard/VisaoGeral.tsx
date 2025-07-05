@@ -7,21 +7,45 @@ import {
   Typography,
   LinearProgress,
   useTheme,
+  Alert,
+  Button,
+  Chip,
 } from "@mui/material";
 import {
   AccountBalance as CapitalIcon,
   TrendingDown as DespesasIcon,
   MonetizationOn as LiquidoIcon,
   Savings as SaldoIcon,
+  EmojiEvents as MetaIcon,
+  Warning as WarningIcon,
 } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 import { GengarMascot } from "../gengar/GengarMascot";
 import { useDadosFinanceiros } from "../../hooks/useDadosFinanceiros";
 import { GraficosDashboard } from "./GraficosDashboard";
 import { TransacoesRecentes } from "./TransacoesRecentes";
+import { NOMES_CATEGORIAS_DESPESA } from "../../types/financas";
 
 export function VisaoGeral() {
-  const { dados } = useDadosFinanceiros();
+  const { dados, obterDespesasPorCategoria, obterTop3CategoriasDespesas } =
+    useDadosFinanceiros();
   const theme = useTheme();
+
+  // Verificar alertas de limites
+  const mesAtual = new Date().getMonth();
+  const anoAtual = new Date().getFullYear();
+  const limitesAtivos = dados.limites.filter(
+    (l) => l.ativo && l.mes === mesAtual && l.ano === anoAtual,
+  );
+  const despesasAtuas = obterDespesasPorCategoria();
+  const alertasPendentes = limitesAtivos.filter((limite) => {
+    const gastoAtual = despesasAtuas[limite.categoria] || 0;
+    return gastoAtual > limite.valorLimite;
+  });
+
+  // Metas ativas
+  const metasAtivas = dados.metas.filter((m) => m.ativa);
+  const top3Categorias = obterTop3CategoriasDespesas();
 
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat("pt-BR", {
