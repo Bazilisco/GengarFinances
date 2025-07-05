@@ -6,7 +6,7 @@ interface LoadingScreenProps {
 }
 
 export function LoadingScreen({
-  message = "Loading your ghostly finances...",
+  message = "Carregando suas finanças fantasmais...",
 }: LoadingScreenProps) {
   return (
     <div className="fixed inset-0 bg-background z-50 flex items-center justify-center">
