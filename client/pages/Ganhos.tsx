@@ -320,6 +320,106 @@ export default function Ganhos() {
                       }}
                     />
 
+                    <TextField
+                      fullWidth
+                      label="Observação (opcional)"
+                      multiline
+                      rows={2}
+                      value={formulario.observacao || ""}
+                      onChange={(e) =>
+                        setFormulario({
+                          ...formulario,
+                          observacao: e.target.value,
+                        })
+                      }
+                      placeholder="Ex: Pagamento do projeto X"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          color: "white",
+                          "& fieldset": {
+                            borderColor: "rgba(150, 84, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(150, 84, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#9654FF",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255,255,255,0.7)",
+                        },
+                      }}
+                    />
+
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        color="rgba(255,255,255,0.7)"
+                        gutterBottom
+                      >
+                        Comprovante (opcional)
+                      </Typography>
+                      <Button
+                        variant="outlined"
+                        component="label"
+                        fullWidth
+                        sx={{
+                          borderColor: "rgba(150, 84, 255, 0.3)",
+                          color: "rgba(255,255,255,0.7)",
+                          "&:hover": {
+                            borderColor: "rgba(150, 84, 255, 0.5)",
+                          },
+                        }}
+                      >
+                        📷 Anexar Imagem
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                setFormulario({
+                                  ...formulario,
+                                  comprovante: event.target?.result as string,
+                                });
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          style={{ display: "none" }}
+                        />
+                      </Button>
+                      {formulario.comprovante && (
+                        <Box sx={{ mt: 1, textAlign: "center" }}>
+                          <img
+                            src={formulario.comprovante}
+                            alt="Comprovante"
+                            style={{
+                              maxWidth: "100%",
+                              maxHeight: "100px",
+                              borderRadius: "4px",
+                              border: "1px solid rgba(150, 84, 255, 0.2)",
+                            }}
+                          />
+                          <Button
+                            size="small"
+                            onClick={() =>
+                              setFormulario({
+                                ...formulario,
+                                comprovante: undefined,
+                              })
+                            }
+                            sx={{ display: "block", mt: 1, color: "#F44336" }}
+                          >
+                            Remover
+                          </Button>
+                        </Box>
+                      )}
+                    </Box>
+
                     <Button
                       type="submit"
                       fullWidth
