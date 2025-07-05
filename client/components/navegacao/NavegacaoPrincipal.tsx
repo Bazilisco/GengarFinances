@@ -20,6 +20,9 @@ import {
   Dashboard as DashboardIcon,
   TrendingUp as GanhosIcon,
   TrendingDown as DespesasIcon,
+  Receipt as ExtratoIcon,
+  EmojiEvents as MetasIcon,
+  Settings as ConfigIcon,
   Menu as MenuIcon,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
@@ -29,6 +32,9 @@ const abas = [
   { path: "/", label: "Visão Geral", icon: DashboardIcon },
   { path: "/ganhos", label: "Ganhos", icon: GanhosIcon },
   { path: "/despesas", label: "Despesas", icon: DespesasIcon },
+  { path: "/extrato", label: "Extrato", icon: ExtratoIcon },
+  { path: "/metas", label: "Metas", icon: MetasIcon },
+  { path: "/configuracoes", label: "Config", icon: ConfigIcon },
 ];
 
 export function NavegacaoPrincipal() {

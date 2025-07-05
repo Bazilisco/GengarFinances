@@ -10,6 +10,9 @@ import { TemaGengarProvider } from "./components/tema/TemaGengarProvider";
 import Index from "./pages/Index";
 import Ganhos from "./pages/Ganhos";
 import Despesas from "./pages/Despesas";
+import Extrato from "./pages/Extrato";
+import Metas from "./pages/Metas";
+import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +28,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/ganhos" element={<Ganhos />} />
             <Route path="/despesas" element={<Despesas />} />
+            <Route path="/extrato" element={<Extrato />} />
+            <Route path="/metas" element={<Metas />} />
+            <Route path="/configuracoes" element={<Configuracoes />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
