@@ -152,9 +152,9 @@ export function TransacoesRecentes() {
                             flexWrap: "wrap",
                           }}
                         >
-                          <Typography color="white" fontWeight="medium">
+                          <Box color="white" fontWeight="medium">
                             {transacao.descricao}
-                          </Typography>
+                          </Box>
                           <Box
                             sx={{
                               display: "flex",
@@ -193,24 +193,31 @@ export function TransacoesRecentes() {
                             mt: 0.5,
                           }}
                         >
-                          <Typography
-                            variant="caption"
-                            color="rgba(255,255,255,0.7)"
+                          <Box
+                            component="span"
+                            sx={{
+                              fontSize: 12,
+                              color: "rgba(255,255,255,0.7)",
+                            }}
                           >
                             {format(new Date(transacao.data), "dd MMM yyyy", {
                               locale: ptBR,
                             })}
-                          </Typography>
-                          <Typography
-                            variant="body1"
-                            fontWeight="bold"
-                            color={
-                              transacao.tipo === "ganho" ? "#4CAF50" : "#F44336"
-                            }
+                          </Box>
+                          <Box
+                            component="span"
+                            sx={{
+                              fontSize: 14,
+                              fontWeight: "bold",
+                              color:
+                                transacao.tipo === "ganho"
+                                  ? "#4CAF50"
+                                  : "#F44336",
+                            }}
                           >
                             {transacao.tipo === "ganho" ? "+" : "-"}
                             {formatarMoeda(transacao.valor)}
-                          </Typography>
+                          </Box>
                         </Box>
                       }
                     />
