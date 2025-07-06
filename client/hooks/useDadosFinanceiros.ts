@@ -392,9 +392,6 @@ export function useDadosFinanceiros() {
   };
 
   const obterGanhosPorCategoria = () => {
-    const mesAtual = new Date().getMonth();
-    const anoAtual = new Date().getFullYear();
-
     const categoriaTotais: Record<CategoriaGanho, number> = {
       salario: 0,
       extra: 0,
@@ -405,10 +402,7 @@ export function useDadosFinanceiros() {
     };
 
     dados.ganhos
-      .filter(
-        (g) =>
-          g.data.getMonth() === mesAtual && g.data.getFullYear() === anoAtual,
-      )
+      .filter((g) => isMesAtualBrasilia(g.data))
       .forEach((ganho) => {
         categoriaTotais[ganho.categoria] += ganho.valor;
       });
