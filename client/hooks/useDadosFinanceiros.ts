@@ -216,7 +216,7 @@ export function useDadosFinanceiros() {
     const novoLimite: LimiteCategoria = {
       ...limite,
       id: Date.now().toString(),
-      criadoEm: new Date(),
+      criadoEm: obterDataBrasilia(),
     };
 
     setDados((prev) => ({
