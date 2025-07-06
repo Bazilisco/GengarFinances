@@ -35,9 +35,9 @@ export function VisaoGeral() {
     useDadosFinanceiros();
   const theme = useTheme();
 
-  // Verificar alertas de limites
-  const mesAtual = new Date().getMonth();
-  const anoAtual = new Date().getFullYear();
+  // Verificar alertas de limites (timezone de Brasília)
+  const mesAtual = obterMesAtualBrasilia();
+  const anoAtual = obterAnoAtualBrasilia();
   const limitesAtivos = dados.limites.filter(
     (l) => l.ativo && l.mes === mesAtual && l.ano === anoAtual,
   );
