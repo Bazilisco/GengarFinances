@@ -36,6 +36,11 @@ import {
   CORES_CATEGORIAS_DESPESA,
 } from "../types/financas";
 import { NavegacaoPrincipal } from "../components/navegacao/NavegacaoPrincipal";
+import {
+  obterDataAtualFormatada,
+  criarDataDeInput,
+  isMesAtualBrasilia,
+} from "../utils/timezone";
 
 export default function Despesas() {
   const {
