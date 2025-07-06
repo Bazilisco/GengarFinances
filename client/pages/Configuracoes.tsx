@@ -74,8 +74,8 @@ export default function Configuracoes() {
   const [formularioLimite, setFormularioLimite] = useState({
     categoria: "alimentacao" as CategoriaDespesa,
     valorLimite: "",
-    mes: new Date().getMonth(),
-    ano: new Date().getFullYear(),
+    mes: obterMesAtualBrasilia(),
+    ano: obterAnoAtualBrasilia(),
   });
 
   // Solicitar permissão para notificações
