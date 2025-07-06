@@ -56,7 +56,7 @@ export default function Despesas() {
     valor: "",
     descricao: "",
     categoria: "outros" as CategoriaDespesa,
-    data: new Date().toISOString().split("T")[0],
+    data: obterDataAtualFormatada(),
     observacao: "",
     comprovante: undefined as string | undefined,
   });
