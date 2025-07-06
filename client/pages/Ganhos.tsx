@@ -96,14 +96,14 @@ export default function Ganhos() {
         valor: parseFloat(formulario.valor),
         descricao: formulario.descricao,
         categoria: formulario.categoria,
-        data: new Date(formulario.data),
+        data: criarDataDeInput(formulario.data),
       });
 
       setFormulario({
         valor: "",
         descricao: "",
         categoria: "salario",
-        data: new Date().toISOString().split("T")[0],
+        data: obterDataAtualFormatada(),
         observacao: "",
         comprovante: undefined,
       });
