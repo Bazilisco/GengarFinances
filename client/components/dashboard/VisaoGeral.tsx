@@ -25,6 +25,10 @@ import { useDadosFinanceiros } from "../../hooks/useDadosFinanceiros";
 import { GraficosDashboard } from "./GraficosDashboard";
 import { TransacoesRecentes } from "./TransacoesRecentes";
 import { NOMES_CATEGORIAS_DESPESA } from "../../types/financas";
+import {
+  obterMesAtualBrasilia,
+  obterAnoAtualBrasilia,
+} from "../../utils/timezone";
 
 export function VisaoGeral() {
   const { dados, obterDespesasPorCategoria, obterTop3CategoriasDespesas } =
