@@ -79,10 +79,8 @@ export default function Metas() {
       setFormulario({
         titulo: "",
         valorAlvo: "",
-        dataInicio: new Date().toISOString().split("T")[0],
-        dataFim: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split("T")[0],
+        dataInicio: obterDataAtualFormatada(),
+        dataFim: obterDataAtualFormatada(),
         ativa: true,
       });
     }
