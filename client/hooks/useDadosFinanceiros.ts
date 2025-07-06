@@ -433,7 +433,7 @@ export function useDadosFinanceiros() {
       "Nov",
       "Dez",
     ];
-    const anoAtual = new Date().getFullYear();
+    const anoAtual = obterAnoAtualBrasilia();
 
     return meses.map((mes) => {
       const indiceMes = meses.indexOf(mes);
