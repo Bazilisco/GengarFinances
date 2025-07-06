@@ -137,11 +137,9 @@ export default function Despesas() {
     event.target.value = "";
   };
 
-  // Filtrar despesas do mês atual
-  const mesAtual = new Date().getMonth();
-  const anoAtual = new Date().getFullYear();
-  const despesasDoMes = dados.despesas.filter(
-    (d) => d.data.getMonth() === mesAtual && d.data.getFullYear() === anoAtual,
+  // Filtrar despesas do mês atual (timezone de Brasília)
+  const despesasDoMes = dados.despesas.filter((d) =>
+    isMesAtualBrasilia(d.data),
   );
 
   return (
