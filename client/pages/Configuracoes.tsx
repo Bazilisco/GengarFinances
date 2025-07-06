@@ -41,6 +41,10 @@ import {
   NOMES_CATEGORIAS_DESPESA,
   ICONES_CATEGORIAS_DESPESA,
 } from "../types/financas";
+import {
+  obterMesAtualBrasilia,
+  obterAnoAtualBrasilia,
+} from "../utils/timezone";
 
 export default function Configuracoes() {
   const {
