@@ -183,7 +183,7 @@ export default function Extrato() {
                           onChange={(e) =>
                             setFiltro({
                               ...filtro,
-                              dataInicio: new Date(e.target.value),
+                              dataInicio: criarDataDeInput(e.target.value),
                             })
                           }
                           InputLabelProps={{ shrink: true }}
