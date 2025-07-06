@@ -371,9 +371,6 @@ export function useDadosFinanceiros() {
   };
 
   const obterDespesasPorCategoria = () => {
-    const mesAtual = new Date().getMonth();
-    const anoAtual = new Date().getFullYear();
-
     const categoriaTotais: Record<CategoriaDespesa, number> = {
       alimentacao: 0,
       transporte: 0,
@@ -386,10 +383,7 @@ export function useDadosFinanceiros() {
     };
 
     dados.despesas
-      .filter(
-        (d) =>
-          d.data.getMonth() === mesAtual && d.data.getFullYear() === anoAtual,
-      )
+      .filter((d) => isMesAtualBrasilia(d.data))
       .forEach((despesa) => {
         categoriaTotais[despesa.categoria] += despesa.valor;
       });
