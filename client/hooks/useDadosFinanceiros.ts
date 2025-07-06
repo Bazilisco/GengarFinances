@@ -462,9 +462,10 @@ export function useDadosFinanceiros() {
   };
 
   const exportarDados = () => {
+    const dataBrasilia = obterDataBrasilia();
     const dadosParaExportar = {
       ...dados,
-      dataExportacao: new Date().toISOString(),
+      dataExportacao: dataBrasilia.toISOString(),
       versao: "2.0",
     };
 
@@ -475,7 +476,7 @@ export function useDadosFinanceiros() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `gengar-financas-${new Date().toISOString().split("T")[0]}.json`;
+    link.download = `gengar-financas-${dataBrasilia.toISOString().split("T")[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
