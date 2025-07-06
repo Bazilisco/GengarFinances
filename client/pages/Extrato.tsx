@@ -71,7 +71,7 @@ export default function Extrato() {
   };
 
   const handleExportarCSV = () => {
-    const nomeArquivo = `extrato-gengar-${format(new Date(), "yyyy-MM", { locale: ptBR })}`;
+    const nomeArquivo = `extrato-gengar-${format(obterDataBrasilia(), "yyyy-MM", { locale: ptBR })}`;
     exportarCSV(transacoes, nomeArquivo);
     setMensagem("Extrato exportado com sucesso! 📄");
     setTipoMensagem("success");
