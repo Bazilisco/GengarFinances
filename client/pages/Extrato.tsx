@@ -43,6 +43,7 @@ import {
   NOMES_CATEGORIAS_DESPESA,
   NOMES_CATEGORIAS_GANHO,
 } from "../types/financas";
+import { obterDataBrasilia } from "../utils/timezone";
 
 export default function Extrato() {
   const { obterTransacoesFiltradas, exportarCSV } = useDadosFinanceiros();
