@@ -125,18 +125,11 @@ export function useDadosFinanceiros() {
     };
   });
 
-  // Calcular totais sempre que os dados mudarem
+  // Calcular totais sempre que os dados mudarem (timezone de Brasília)
   useEffect(() => {
-    const mesAtual = new Date().getMonth();
-    const anoAtual = new Date().getFullYear();
-
-    const ganhosDoMes = dados.ganhos.filter(
-      (g) =>
-        g.data.getMonth() === mesAtual && g.data.getFullYear() === anoAtual,
-    );
-    const despesasDoMes = dados.despesas.filter(
-      (d) =>
-        d.data.getMonth() === mesAtual && d.data.getFullYear() === anoAtual,
+    const ganhosDoMes = dados.ganhos.filter((g) => isMesAtualBrasilia(g.data));
+    const despesasDoMes = dados.despesas.filter((d) =>
+      isMesAtualBrasilia(d.data),
     );
 
     const capitalBruto = ganhosDoMes.reduce(
