@@ -57,7 +57,7 @@ export default function Configuracoes() {
 
   // Estados para configuração de PIN
   const [pinAtivado, setPinAtivado] = useState(
-    dados.configuracaoSeguranca.pinAtivado,
+    dados.configuracaoSeguranca?.pinAtivado || false,
   );
   const [pin, setPin] = useState("");
   const [confirmarPin, setConfirmarPin] = useState("");
