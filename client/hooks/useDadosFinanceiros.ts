@@ -267,19 +267,20 @@ export function useDadosFinanceiros() {
 
   const obterTransacoesFiltradas = (filtro: FiltroExtrato): Transacao[] => {
     let dataInicio: Date;
-    let dataFim: Date = new Date();
+    let dataFim: Date = obterDataBrasilia();
 
-    // Determinar período
+    // Determinar período (usando timezone de Brasília)
+    const agora = obterDataBrasilia();
     switch (filtro.periodo) {
       case "7dias":
-        dataInicio = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        dataInicio = new Date(agora.getTime() - 7 * 24 * 60 * 60 * 1000);
         break;
       case "30dias":
-        dataInicio = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        dataInicio = new Date(agora.getTime() - 30 * 24 * 60 * 60 * 1000);
         break;
       case "personalizado":
         dataInicio = filtro.dataInicio || new Date(0);
-        dataFim = filtro.dataFim || new Date();
+        dataFim = filtro.dataFim || agora;
         break;
       default:
         dataInicio = new Date(0);
