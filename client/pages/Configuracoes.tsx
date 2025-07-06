@@ -182,9 +182,9 @@ export default function Configuracoes() {
     }
   };
 
-  // Obter limites ativos do mês atual
-  const mesAtual = new Date().getMonth();
-  const anoAtual = new Date().getFullYear();
+  // Obter limites ativos do mês atual (timezone de Brasília)
+  const mesAtual = obterMesAtualBrasilia();
+  const anoAtual = obterAnoAtualBrasilia();
   const limitesAtivos = dados.limites.filter(
     (l) => l.ativo && l.mes === mesAtual && l.ano === anoAtual,
   );
