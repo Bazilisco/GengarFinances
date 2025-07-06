@@ -36,6 +36,11 @@ import {
   CORES_CATEGORIAS_GANHO,
 } from "../types/financas";
 import { NavegacaoPrincipal } from "../components/navegacao/NavegacaoPrincipal";
+import {
+  obterDataAtualFormatada,
+  criarDataDeInput,
+  isMesAtualBrasilia,
+} from "../utils/timezone";
 
 export default function Ganhos() {
   const {
