@@ -32,6 +32,7 @@ import { GengarMascot } from "../components/gengar/GengarMascot";
 import { NavegacaoPrincipal } from "../components/navegacao/NavegacaoPrincipal";
 import { useDadosFinanceiros } from "../hooks/useDadosFinanceiros";
 import { Meta } from "../types/financas";
+import { obterDataAtualFormatada, criarDataDeInput } from "../utils/timezone";
 
 export default function Metas() {
   const { dados, adicionarMeta, atualizarMeta, excluirMeta } =
