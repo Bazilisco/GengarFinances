@@ -97,6 +97,12 @@ export function useDadosFinanceiros() {
         ...l,
         criadoEm: new Date(l.criadoEm),
       }));
+
+      // Garantir que configuracaoSeguranca existe
+      if (!parsed.configuracaoSeguranca) {
+        parsed.configuracaoSeguranca = configuracaoSegurancaInicial;
+      }
+
       return parsed;
     }
 
