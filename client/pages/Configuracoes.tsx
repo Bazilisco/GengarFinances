@@ -141,8 +141,8 @@ export default function Configuracoes() {
       setFormularioLimite({
         categoria: "alimentacao",
         valorLimite: "",
-        mes: new Date().getMonth(),
-        ano: new Date().getFullYear(),
+        mes: obterMesAtualBrasilia(),
+        ano: obterAnoAtualBrasilia(),
       });
     }
     setDialogLimiteAberto(true);
