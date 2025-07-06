@@ -373,7 +373,7 @@ export default function Configuracoes() {
                       {pinAtivado ? "Configurar PIN" : "Remover PIN"}
                     </Button>
 
-                    {dados.configuracaoSeguranca.pinAtivado && (
+                    {dados.configuracaoSeguranca?.pinAtivado && (
                       <Alert
                         severity="info"
                         sx={{
