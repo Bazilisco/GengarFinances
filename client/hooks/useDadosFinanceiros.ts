@@ -337,8 +337,8 @@ export function useDadosFinanceiros() {
   };
 
   const verificarAlertas = () => {
-    const mesAtual = new Date().getMonth();
-    const anoAtual = new Date().getFullYear();
+    const mesAtual = obterMesAtualBrasilia();
+    const anoAtual = obterAnoAtualBrasilia();
 
     dados.limites
       .filter(
