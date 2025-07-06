@@ -166,7 +166,7 @@ export function useDadosFinanceiros() {
     const novaDespesa: Despesa = {
       ...despesa,
       id: Date.now().toString(),
-      criadoEm: new Date(),
+      criadoEm: obterDataBrasilia(),
     };
 
     setDados((prev) => ({
@@ -179,7 +179,7 @@ export function useDadosFinanceiros() {
     const novoGanho: Ganho = {
       ...ganho,
       id: Date.now().toString(),
-      criadoEm: new Date(),
+      criadoEm: obterDataBrasilia(),
     };
 
     setDados((prev) => ({
@@ -192,7 +192,7 @@ export function useDadosFinanceiros() {
     const novaMeta: Meta = {
       ...meta,
       id: Date.now().toString(),
-      criadoEm: new Date(),
+      criadoEm: obterDataBrasilia(),
     };
 
     setDados((prev) => ({
