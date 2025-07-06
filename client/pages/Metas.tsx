@@ -99,8 +99,8 @@ export default function Metas() {
         atualizarMeta(metaEditando.id, {
           titulo: formulario.titulo,
           valorAlvo: parseFloat(formulario.valorAlvo),
-          dataInicio: new Date(formulario.dataInicio),
-          dataFim: new Date(formulario.dataFim),
+          dataInicio: criarDataDeInput(formulario.dataInicio),
+          dataFim: criarDataDeInput(formulario.dataFim),
           ativa: formulario.ativa,
         });
         setMensagem("Meta atualizada com sucesso! 🎯");
@@ -109,8 +109,8 @@ export default function Metas() {
           titulo: formulario.titulo,
           valorAlvo: parseFloat(formulario.valorAlvo),
           valorAtual: 0,
-          dataInicio: new Date(formulario.dataInicio),
-          dataFim: new Date(formulario.dataFim),
+          dataInicio: criarDataDeInput(formulario.dataInicio),
+          dataFim: criarDataDeInput(formulario.dataFim),
           ativa: formulario.ativa,
         });
         setMensagem("Meta criada com sucesso! 🎯");
