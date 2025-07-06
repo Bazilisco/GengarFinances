@@ -135,12 +135,8 @@ export default function Ganhos() {
     event.target.value = "";
   };
 
-  // Filtrar ganhos do mês atual
-  const mesAtual = new Date().getMonth();
-  const anoAtual = new Date().getFullYear();
-  const ganhosDoMes = dados.ganhos.filter(
-    (g) => g.data.getMonth() === mesAtual && g.data.getFullYear() === anoAtual,
-  );
+  // Filtrar ganhos do mês atual (timezone de Brasília)
+  const ganhosDoMes = dados.ganhos.filter((g) => isMesAtualBrasilia(g.data));
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#0a0a0a" }}>
