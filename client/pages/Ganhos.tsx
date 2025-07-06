@@ -56,7 +56,7 @@ export default function Ganhos() {
     valor: "",
     descricao: "",
     categoria: "salario" as CategoriaGanho,
-    data: new Date().toISOString().split("T")[0],
+    data: obterDataAtualFormatada(),
     observacao: "",
     comprovante: undefined as string | undefined,
   });
