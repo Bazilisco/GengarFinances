@@ -22,7 +22,6 @@ import {
   TrendingDown as DespesasIcon,
   Receipt as ExtratoIcon,
   EmojiEvents as MetasIcon,
-  Settings as ConfigIcon,
   Menu as MenuIcon,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
