@@ -114,7 +114,8 @@ export default function Configuracoes() {
 
     try {
       await importarDados(arquivo);
-      setMensagem("Dados importados com sucesso! 📥");
+      // Mostrar modal de sucesso ao invés de snackbar
+      setModalSucessoAberto(true);
     } catch (error) {
       setMensagem("Erro ao importar dados 😢");
     }
