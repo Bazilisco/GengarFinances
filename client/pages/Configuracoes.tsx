@@ -20,6 +20,9 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
+  Dialog,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import {
   Settings as SettingsIcon,
