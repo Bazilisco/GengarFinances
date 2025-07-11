@@ -61,6 +61,9 @@ export default function Ganhos() {
     comprovante: undefined as string | undefined,
   });
 
+  // Debug: verificar se a data está sendo definida corretamente
+  console.log("Data do formulário:", formulario.data);
+
   const [carregando, setCarregando] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState<"success" | "error">(
