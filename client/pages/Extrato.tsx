@@ -423,119 +423,114 @@ export default function Extrato() {
                               </Box>
                             </ListItemIcon>
 
-                            <ListItemText
-                              primary={
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    flexWrap: "wrap",
-                                    gap: 1,
-                                  }}
-                                >
-                                  <Box>
-                                    <Typography
-                                      color="white"
-                                      fontWeight="medium"
-                                    >
-                                      {transacao.descricao}
-                                    </Typography>
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 1,
-                                        mt: 0.5,
-                                      }}
-                                    >
-                                      <span>
-                                        {transacao.tipo === "ganho"
-                                          ? ICONES_CATEGORIAS_GANHO[
-                                              transacao.categoria as keyof typeof ICONES_CATEGORIAS_GANHO
-                                            ]
-                                          : ICONES_CATEGORIAS_DESPESA[
-                                              transacao.categoria as keyof typeof ICONES_CATEGORIAS_DESPESA
-                                            ]}
-                                      </span>
-                                      <Chip
-                                        label={
-                                          transacao.tipo === "ganho"
-                                            ? NOMES_CATEGORIAS_GANHO[
-                                                transacao.categoria as keyof typeof NOMES_CATEGORIAS_GANHO
-                                              ]
-                                            : NOMES_CATEGORIAS_DESPESA[
-                                                transacao.categoria as keyof typeof NOMES_CATEGORIAS_DESPESA
-                                              ]
-                                        }
-                                        size="small"
-                                        sx={{
-                                          backgroundColor:
-                                            transacao.tipo === "ganho"
-                                              ? "rgba(76, 175, 80, 0.2)"
-                                              : "rgba(244, 67, 54, 0.2)",
-                                          color: "white",
-                                          fontSize: 11,
-                                        }}
-                                      />
-                                      <Typography
-                                        variant="caption"
-                                        color="rgba(255,255,255,0.7)"
-                                      >
-                                        {format(
-                                          new Date(transacao.data),
-                                          "dd/MM/yyyy",
-                                          {
-                                            locale: ptBR,
-                                          },
-                                        )}
-                                      </Typography>
-                                    </Box>
-                                  </Box>
-
+                            <Box sx={{ flexGrow: 1 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  flexWrap: "wrap",
+                                  gap: 1,
+                                }}
+                              >
+                                <Box>
+                                  <Typography color="white" fontWeight="medium">
+                                    {transacao.descricao}
+                                  </Typography>
                                   <Box
                                     sx={{
                                       display: "flex",
                                       alignItems: "center",
                                       gap: 1,
+                                      mt: 0.5,
                                     }}
                                   >
-                                    <Typography
-                                      variant="h6"
-                                      fontWeight="bold"
-                                      color={
+                                    <span>
+                                      {transacao.tipo === "ganho"
+                                        ? ICONES_CATEGORIAS_GANHO[
+                                            transacao.categoria as keyof typeof ICONES_CATEGORIAS_GANHO
+                                          ]
+                                        : ICONES_CATEGORIAS_DESPESA[
+                                            transacao.categoria as keyof typeof ICONES_CATEGORIAS_DESPESA
+                                          ]}
+                                    </span>
+                                    <Chip
+                                      label={
                                         transacao.tipo === "ganho"
-                                          ? "#4CAF50"
-                                          : "#F44336"
+                                          ? NOMES_CATEGORIAS_GANHO[
+                                              transacao.categoria as keyof typeof NOMES_CATEGORIAS_GANHO
+                                            ]
+                                          : NOMES_CATEGORIAS_DESPESA[
+                                              transacao.categoria as keyof typeof NOMES_CATEGORIAS_DESPESA
+                                            ]
                                       }
+                                      size="small"
+                                      sx={{
+                                        backgroundColor:
+                                          transacao.tipo === "ganho"
+                                            ? "rgba(76, 175, 80, 0.2)"
+                                            : "rgba(244, 67, 54, 0.2)",
+                                        color: "white",
+                                        fontSize: 11,
+                                      }}
+                                    />
+                                    <Typography
+                                      variant="caption"
+                                      color="rgba(255,255,255,0.7)"
                                     >
-                                      {transacao.tipo === "ganho" ? "+" : "-"}
-                                      {formatarMoeda(transacao.valor)}
+                                      {format(
+                                        new Date(transacao.data),
+                                        "dd/MM/yyyy",
+                                        {
+                                          locale: ptBR,
+                                        },
+                                      )}
                                     </Typography>
-
-                                    {(transacao.observacao ||
-                                      transacao.comprovante) && (
-                                      <IconButton
-                                        size="small"
-                                        onClick={() =>
-                                          setTransacaoSelecionada(transacao)
-                                        }
-                                        sx={{
-                                          color: "rgba(255,255,255,0.7)",
-                                          "&:hover": {
-                                            color: "#9654FF",
-                                            backgroundColor:
-                                              "rgba(150, 84, 255, 0.1)",
-                                          },
-                                        }}
-                                      >
-                                        <ViewIcon />
-                                      </IconButton>
-                                    )}
                                   </Box>
                                 </Box>
-                              }
-                            />
+
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  <Typography
+                                    variant="h6"
+                                    fontWeight="bold"
+                                    color={
+                                      transacao.tipo === "ganho"
+                                        ? "#4CAF50"
+                                        : "#F44336"
+                                    }
+                                  >
+                                    {transacao.tipo === "ganho" ? "+" : "-"}
+                                    {formatarMoeda(transacao.valor)}
+                                  </Typography>
+
+                                  {(transacao.observacao ||
+                                    transacao.comprovante) && (
+                                    <IconButton
+                                      size="small"
+                                      onClick={() =>
+                                        setTransacaoSelecionada(transacao)
+                                      }
+                                      sx={{
+                                        color: "rgba(255,255,255,0.7)",
+                                        "&:hover": {
+                                          color: "#9654FF",
+                                          backgroundColor:
+                                            "rgba(150, 84, 255, 0.1)",
+                                        },
+                                      }}
+                                    >
+                                      <ViewIcon />
+                                    </IconButton>
+                                  )}
+                                </Box>
+                              </Box>
+                            </Box>
                           </ListItem>
                         </motion.div>
                       ))}
