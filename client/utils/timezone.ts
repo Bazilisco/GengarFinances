@@ -24,15 +24,11 @@ export function obterDataBrasilia(): Date {
  * @returns String no formato YYYY-MM-DD
  */
 export function formatarDataParaInput(data?: Date): string {
-  const dataBrasilia = data || obterDataBrasilia();
+  const dataParaFormatar = data || obterDataBrasilia();
 
-  // Ajustar para timezone de Brasília antes de formatar
-  const utc = dataBrasilia.getTime() + dataBrasilia.getTimezoneOffset() * 60000;
-  const dataAjustada = new Date(utc + -3 * 3600000);
-
-  const ano = dataAjustada.getFullYear();
-  const mes = String(dataAjustada.getMonth() + 1).padStart(2, "0");
-  const dia = String(dataAjustada.getDate()).padStart(2, "0");
+  const ano = dataParaFormatar.getFullYear();
+  const mes = String(dataParaFormatar.getMonth() + 1).padStart(2, "0");
+  const dia = String(dataParaFormatar.getDate()).padStart(2, "0");
 
   return `${ano}-${mes}-${dia}`;
 }
