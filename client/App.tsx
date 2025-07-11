@@ -12,7 +12,6 @@ import Ganhos from "./pages/Ganhos";
 import Despesas from "./pages/Despesas";
 import Extrato from "./pages/Extrato";
 import Metas from "./pages/Metas";
-import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
