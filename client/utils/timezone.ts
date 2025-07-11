@@ -23,14 +23,9 @@ export function obterDataBrasilia(): Date {
  * @returns String no formato YYYY-MM-DD da data atual
  */
 export function obterDataAtualFormatada(): string {
-  // Usar data local para inputs HTML date para evitar problemas de timezone
+  // Método mais simples e confiável
   const hoje = new Date();
-
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-  const dia = String(hoje.getDate()).padStart(2, "0");
-
-  return `${ano}-${mes}-${dia}`;
+  return hoje.toISOString().split("T")[0];
 }
 
 /**
