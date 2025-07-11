@@ -33,6 +33,8 @@ import {
   Check as CheckIcon,
   Refresh as RefreshIcon,
   Info as InfoIcon,
+  FolderOpen as FolderOpenIcon,
+  CloudDownload as CloudDownloadIcon,
 } from "@mui/icons-material";
 import { GengarMascot } from "../components/gengar/GengarMascot";
 import { NavegacaoPrincipal } from "../components/navegacao/NavegacaoPrincipal";
