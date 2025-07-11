@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Box,
@@ -12,446 +12,229 @@ import {
   Alert,
   Snackbar,
   Grid,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   MenuItem,
+  Fab,
+  Chip,
+  Paper,
+  Divider,
+  IconButton,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import {
-  Security as SecurityIcon,
-  Notifications as NotificationsIcon,
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Warning as WarningIcon,
+  Settings as SettingsIcon,
+  CalendarToday as CalendarIcon,
+  AttachMoney as MoneyIcon,
+  Palette as ThemeIcon,
+  Language as LanguageIcon,
+  Download as ExportIcon,
+  Upload as ImportIcon,
+  Save as SaveIcon,
+  Check as CheckIcon,
+  Refresh as RefreshIcon,
+  Info as InfoIcon,
 } from "@mui/icons-material";
 import { GengarMascot } from "../components/gengar/GengarMascot";
 import { NavegacaoPrincipal } from "../components/navegacao/NavegacaoPrincipal";
+import { CampoMoeda } from "../components/forms/CampoMoeda";
 import { useDadosFinanceiros } from "../hooks/useDadosFinanceiros";
-import {
-  LimiteCategoria,
-  CategoriaDespesa,
-  NOMES_CATEGORIAS_DESPESA,
-  ICONES_CATEGORIAS_DESPESA,
-} from "../types/financas";
-import {
-  obterMesAtualBrasilia,
-  obterAnoAtualBrasilia,
-} from "../utils/timezone";
+
+interface ConfiguracoesApp {
+  diaInicioMes: number;
+  moeda: "BRL" | "USD" | "EUR";
+  tema: "claro" | "escuro";
+  idioma: "pt-BR" | "en-US" | "es-ES";
+}
 
 export default function Configuracoes() {
-  const {
-    dados,
-    atualizarConfiguracaoSeguranca,
-    adicionarLimiteCategoria,
-    obterDespesasPorCategoria,
-  } = useDadosFinanceiros();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const { exportarDados, importarDados } = useDadosFinanceiros();
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
+  const [configuracoes, setConfiguracoes] = useState<ConfiguracoesApp>({
+    diaInicioMes: 1,
+    moeda: "BRL",
+    tema: "escuro",
+    idioma: "pt-BR",
+  });
+
+  const [valorTeste, setValorTeste] = useState(0); // Valor em centavos
+  const [carregando, setCarregando] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
   const [mensagem, setMensagem] = useState("");
-  const [tipoMensagem, setTipoMensagem] = useState<"success" | "error">(
-    "success",
-  );
 
-  // Estados para configuração de PIN
-  const [pinAtivado, setPinAtivado] = useState(
-    dados.configuracaoSeguranca?.pinAtivado || false,
-  );
-  const [pin, setPin] = useState("");
-  const [confirmarPin, setConfirmarPin] = useState("");
-
-  // Estados para alertas
-  const [dialogLimiteAberto, setDialogLimiteAberto] = useState(false);
-  const [limiteEditando, setLimiteEditando] = useState<LimiteCategoria | null>(
-    null,
-  );
-  const [formularioLimite, setFormularioLimite] = useState({
-    categoria: "alimentacao" as CategoriaDespesa,
-    valorLimite: "",
-    mes: obterMesAtualBrasilia(),
-    ano: obterAnoAtualBrasilia(),
-  });
-
-  // Solicitar permissão para notificações
-  useEffect(() => {
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valor);
-  };
-
-  const handleSalvarPin = () => {
-    if (pinAtivado) {
-      if (!pin || pin.length !== 4 || isNaN(Number(pin))) {
-        setMensagem("PIN deve ter exatamente 4 dígitos!");
-        setTipoMensagem("error");
-        return;
-      }
-
-      if (pin !== confirmarPin) {
-        setMensagem("PINs não coincidem!");
-        setTipoMensagem("error");
-        return;
-      }
-
-      atualizarConfiguracaoSeguranca({
-        pinAtivado: true,
-        pin: pin,
-      });
-
-      setMensagem("PIN configurado com sucesso! 🔐");
-      setTipoMensagem("success");
-    } else {
-      atualizarConfiguracaoSeguranca({
-        pinAtivado: false,
-        pin: undefined,
-      });
-
-      setMensagem("PIN removido com sucesso!");
-      setTipoMensagem("success");
-    }
-
-    setPin("");
-    setConfirmarPin("");
-  };
-
-  const abrirDialogLimite = (limite?: LimiteCategoria) => {
-    if (limite) {
-      setLimiteEditando(limite);
-      setFormularioLimite({
-        categoria: limite.categoria,
-        valorLimite: limite.valorLimite.toString(),
-        mes: limite.mes,
-        ano: limite.ano,
-      });
-    } else {
-      setLimiteEditando(null);
-      setFormularioLimite({
-        categoria: "alimentacao",
-        valorLimite: "",
-        mes: obterMesAtualBrasilia(),
-        ano: obterAnoAtualBrasilia(),
-      });
-    }
-    setDialogLimiteAberto(true);
-  };
-
-  const handleSalvarLimite = () => {
-    if (!formularioLimite.valorLimite) {
-      setMensagem("Preencha o valor do limite!");
-      setTipoMensagem("error");
-      return;
-    }
-
-    adicionarLimiteCategoria({
-      categoria: formularioLimite.categoria,
-      valorLimite: parseFloat(formularioLimite.valorLimite),
-      ativo: true,
-      mes: formularioLimite.mes,
-      ano: formularioLimite.ano,
-    });
-
-    setMensagem("Limite configurado com sucesso! 🚨");
-    setTipoMensagem("success");
-    setDialogLimiteAberto(false);
-  };
-
-  const testarNotificacao = () => {
-    if ("Notification" in window && Notification.permission === "granted") {
-      new Notification("🎉 Teste de Notificação", {
-        body: "As notificações estão funcionando perfeitamente no Gengar Finanças!",
-        icon: "/placeholder.svg",
-      });
-      setMensagem("Notificação de teste enviada!");
-      setTipoMensagem("success");
-    } else {
-      setMensagem("Permissão para notificações não concedida!");
-      setTipoMensagem("error");
-    }
-  };
-
-  // Obter limites ativos do mês atual (timezone de Brasília)
-  const mesAtual = obterMesAtualBrasilia();
-  const anoAtual = obterAnoAtualBrasilia();
-  const limitesAtivos = dados.limites.filter(
-    (l) => l.ativo && l.mes === mesAtual && l.ano === anoAtual,
-  );
-
-  // Verificar alertas pendentes
-  const despesasAtuas = obterDespesasPorCategoria();
-  const alertasPendentes = limitesAtivos.filter((limite) => {
-    const gastoAtual = despesasAtuas[limite.categoria] || 0;
-    return gastoAtual > limite.valorLimite;
-  });
-
-  const meses = [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
+  const moedas = [
+    { value: "BRL", label: "Real Brasileiro (R$)", flag: "🇧🇷" },
+    { value: "USD", label: "Dólar Americano ($)", flag: "🇺🇸" },
+    { value: "EUR", label: "Euro (€)", flag: "🇪🇺" },
   ];
 
+  const idiomas = [
+    { value: "pt-BR", label: "Português (Brasil)", flag: "🇧🇷" },
+    { value: "en-US", label: "English (US)", flag: "🇺🇸" },
+    { value: "es-ES", label: "Español (España)", flag: "🇪🇸" },
+  ];
+
+  const diasMes = Array.from({ length: 28 }, (_, i) => i + 1);
+
+  const handleSalvarConfiguracoes = async () => {
+    setCarregando(true);
+
+    try {
+      // Simular salvamento
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      setSucesso(true);
+      setMensagem("Configurações salvas com sucesso! 👻");
+
+      // Reset sucesso após 2 segundos
+      setTimeout(() => setSucesso(false), 2000);
+    } catch (error) {
+      setMensagem("Erro ao salvar configurações 😢");
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  const handleExportar = () => {
+    exportarDados();
+    setMensagem("Dados exportados com sucesso! 📤");
+  };
+
+  const handleImportar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const arquivo = event.target.files?.[0];
+    if (!arquivo) return;
+
+    try {
+      await importarDados(arquivo);
+      setMensagem("Dados importados com sucesso! 📥");
+    } catch (error) {
+      setMensagem("Erro ao importar dados 😢");
+    }
+
+    // Limpar input
+    event.target.value = "";
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#0a0a0a" }}>
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#0a0a0a", pb: 10 }}>
       <NavegacaoPrincipal />
 
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: { xs: 2, md: 3 } }}>
         {/* Cabeçalho */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           style={{ marginBottom: 32 }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 4 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 4,
+              flexDirection: { xs: "column", sm: "row" },
+              textAlign: { xs: "center", sm: "left" },
+            }}
+          >
             <GengarMascot size="md" animate={true} />
             <Box>
               <Typography variant="h4" color="white" fontWeight="bold">
-                Configurações
+                ⚙️ Configurações
               </Typography>
               <Typography variant="subtitle1" color="rgba(255,255,255,0.7)">
-                Personalize seu aplicativo e configure alertas
+                Personalize sua experiência fantasmal
               </Typography>
             </Box>
           </Box>
         </motion.div>
 
         <Grid container spacing={3}>
-          {/* Alertas Pendentes */}
-          {alertasPendentes.length > 0 && (
-            <Grid item xs={12}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-              >
-                <Alert
-                  severity="warning"
-                  icon={<WarningIcon />}
-                  sx={{
-                    backgroundColor: "rgba(255, 152, 0, 0.1)",
-                    color: "#FF9800",
-                    border: "1px solid rgba(255, 152, 0, 0.2)",
-                    "& .MuiAlert-icon": { color: "#FF9800" },
-                  }}
-                >
-                  <Typography variant="h6" gutterBottom>
-                    🚨 Limites Ultrapassados!
-                  </Typography>
-                  {alertasPendentes.map((limite) => (
-                    <Typography key={limite.id} variant="body2">
-                      • {NOMES_CATEGORIAS_DESPESA[limite.categoria]}:{" "}
-                      {formatarMoeda(despesasAtuas[limite.categoria])} de{" "}
-                      {formatarMoeda(limite.valorLimite)}
-                    </Typography>
-                  ))}
-                </Alert>
-              </motion.div>
-            </Grid>
-          )}
-
-          {/* Configurações de Segurança */}
+          {/* Período de Análise */}
           <Grid item xs={12} md={6}>
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              variants={cardVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.1 }}
             >
               <Card
                 sx={{
                   background:
-                    "linear-gradient(135deg, rgba(150, 84, 255, 0.1), rgba(150, 84, 255, 0.05))",
-                  border: "1px solid rgba(150, 84, 255, 0.2)",
+                    "linear-gradient(135deg, rgba(150, 84, 255, 0.15), rgba(150, 84, 255, 0.05))",
+                  border: "1px solid rgba(150, 84, 255, 0.3)",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 8px 32px rgba(150, 84, 255, 0.2)",
                 }}
               >
                 <CardContent>
-                  <Typography variant="h6" color="white" gutterBottom>
-                    <SecurityIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Segurança
-                  </Typography>
-
-                  <Box sx={{ "& > *": { mb: 2 } }}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={pinAtivado}
-                          onChange={(e) => setPinAtivado(e.target.checked)}
-                          sx={{
-                            "& .MuiSwitch-switchBase.Mui-checked": {
-                              color: "#9654FF",
-                            },
-                            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                              { backgroundColor: "#9654FF" },
-                          }}
-                        />
-                      }
-                      label="Ativar PIN de 4 dígitos"
-                      sx={{ color: "white" }}
-                    />
-
-                    {pinAtivado && (
-                      <>
-                        <TextField
-                          fullWidth
-                          label="PIN (4 dígitos)"
-                          type="password"
-                          value={pin}
-                          onChange={(e) => setPin(e.target.value)}
-                          inputProps={{ maxLength: 4, pattern: "[0-9]*" }}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              color: "white",
-                              "& fieldset": {
-                                borderColor: "rgba(150, 84, 255, 0.3)",
-                              },
-                              "&:hover fieldset": {
-                                borderColor: "rgba(150, 84, 255, 0.5)",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: "#9654FF",
-                              },
-                            },
-                            "& .MuiInputLabel-root": {
-                              color: "rgba(255,255,255,0.7)",
-                            },
-                          }}
-                        />
-
-                        <TextField
-                          fullWidth
-                          label="Confirmar PIN"
-                          type="password"
-                          value={confirmarPin}
-                          onChange={(e) => setConfirmarPin(e.target.value)}
-                          inputProps={{ maxLength: 4, pattern: "[0-9]*" }}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              color: "white",
-                              "& fieldset": {
-                                borderColor: "rgba(150, 84, 255, 0.3)",
-                              },
-                              "&:hover fieldset": {
-                                borderColor: "rgba(150, 84, 255, 0.5)",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: "#9654FF",
-                              },
-                            },
-                            "& .MuiInputLabel-root": {
-                              color: "rgba(255,255,255,0.7)",
-                            },
-                          }}
-                        />
-                      </>
-                    )}
-
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      onClick={handleSalvarPin}
-                      sx={{
-                        background: "linear-gradient(45deg, #9654FF, #7C2AFF)",
-                        "&:hover": {
-                          background:
-                            "linear-gradient(45deg, #7C2AFF, #5D0FFF)",
-                        },
-                      }}
-                    >
-                      {pinAtivado ? "Configurar PIN" : "Remover PIN"}
-                    </Button>
-
-                    {dados.configuracaoSeguranca?.pinAtivado && (
-                      <Alert
-                        severity="info"
-                        sx={{
-                          backgroundColor: "rgba(33, 150, 243, 0.1)",
-                          color: "#2196F3",
-                          "& .MuiAlert-icon": { color: "#2196F3" },
-                        }}
-                      >
-                        PIN está ativo. O app solicitará o código ao iniciar.
-                      </Alert>
-                    )}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 2,
+                    }}
+                  >
+                    <CalendarIcon sx={{ color: "#9654FF" }} />
+                    <Typography variant="h6" color="white" fontWeight="bold">
+                      Período de Análise
+                    </Typography>
                   </Box>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </Grid>
 
-          {/* Configurações de Notificações */}
-          <Grid item xs={12} md={6}>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
-              <Card
-                sx={{
-                  background:
-                    "linear-gradient(135deg, rgba(150, 84, 255, 0.1), rgba(150, 84, 255, 0.05))",
-                  border: "1px solid rgba(150, 84, 255, 0.2)",
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" color="white" gutterBottom>
-                    <NotificationsIcon
-                      sx={{ mr: 1, verticalAlign: "middle" }}
-                    />
-                    Notificações
-                  </Typography>
-
-                  <Box sx={{ "& > *": { mb: 2 } }}>
-                    <Typography
-                      variant="body2"
-                      color="rgba(255,255,255,0.7)"
-                      gutterBottom
-                    >
-                      Receba alertas quando os limites de categoria forem
-                      ultrapassados.
-                    </Typography>
-
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      onClick={testarNotificacao}
-                      sx={{
-                        borderColor: "rgba(150, 84, 255, 0.5)",
-                        color: "#9654FF",
-                        "&:hover": {
-                          borderColor: "#9654FF",
-                          backgroundColor: "rgba(150, 84, 255, 0.1)",
+                  <TextField
+                    fullWidth
+                    select
+                    label="Dia de início do mês"
+                    value={configuracoes.diaInicioMes}
+                    onChange={(e) =>
+                      setConfiguracoes({
+                        ...configuracoes,
+                        diaInicioMes: Number(e.target.value),
+                      })
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        color: "white",
+                        "& fieldset": {
+                          borderColor: "rgba(150, 84, 255, 0.3)",
                         },
-                      }}
-                    >
-                      Testar Notificação
-                    </Button>
+                        "&:hover fieldset": {
+                          borderColor: "rgba(150, 84, 255, 0.5)",
+                        },
+                        "&.Mui-focused fieldset": { borderColor: "#9654FF" },
+                      },
+                      "& .MuiInputLabel-root": {
+                        color: "rgba(255,255,255,0.7)",
+                      },
+                    }}
+                  >
+                    {diasMes.map((dia) => (
+                      <MenuItem key={dia} value={dia}>
+                        Dia {dia}
+                      </MenuItem>
+                    ))}
+                  </TextField>
 
+                  <Box sx={{ mt: 2 }}>
                     <Alert
                       severity="info"
+                      icon={<InfoIcon />}
                       sx={{
                         backgroundColor: "rgba(33, 150, 243, 0.1)",
-                        color: "#2196F3",
-                        "& .MuiAlert-icon": { color: "#2196F3" },
+                        color: "#64B5F6",
+                        border: "1px solid rgba(33, 150, 243, 0.2)",
+                        "& .MuiAlert-icon": { color: "#64B5F6" },
                       }}
                     >
-                      Certifique-se de permitir notificações no seu navegador
-                      para receber alertas.
+                      O período mensal será calculado a partir do dia
+                      selecionado
                     </Alert>
                   </Box>
                 </CardContent>
@@ -459,331 +242,435 @@ export default function Configuracoes() {
             </motion.div>
           </Grid>
 
-          {/* Limites de Categoria */}
-          <Grid item xs={12}>
+          {/* Configurações de Moeda */}
+          <Grid item xs={12} md={6}>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              variants={cardVariants}
+              initial="hidden"
+              animate="visible"
               transition={{ delay: 0.2 }}
             >
               <Card
                 sx={{
                   background:
-                    "linear-gradient(135deg, rgba(150, 84, 255, 0.1), rgba(150, 84, 255, 0.05))",
-                  border: "1px solid rgba(150, 84, 255, 0.2)",
+                    "linear-gradient(135deg, rgba(150, 84, 255, 0.15), rgba(150, 84, 255, 0.05))",
+                  border: "1px solid rgba(150, 84, 255, 0.3)",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 8px 32px rgba(150, 84, 255, 0.2)",
                 }}
               >
                 <CardContent>
                   <Box
                     sx={{
                       display: "flex",
-                      justifyContent: "space-between",
                       alignItems: "center",
+                      gap: 1,
                       mb: 2,
                     }}
                   >
-                    <Typography variant="h6" color="white">
-                      🚨 Limites por Categoria
+                    <MoneyIcon sx={{ color: "#9654FF" }} />
+                    <Typography variant="h6" color="white" fontWeight="bold">
+                      Moeda Principal
                     </Typography>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      startIcon={<AddIcon />}
-                      onClick={() => abrirDialogLimite()}
-                      sx={{
-                        background: "linear-gradient(45deg, #9654FF, #7C2AFF)",
-                        "&:hover": {
-                          background:
-                            "linear-gradient(45deg, #7C2AFF, #5D0FFF)",
-                        },
-                      }}
-                    >
-                      Novo Limite
-                    </Button>
                   </Box>
 
-                  {limitesAtivos.length === 0 ? (
-                    <Box
-                      sx={{
-                        textAlign: "center",
-                        py: 4,
+                  <TextField
+                    fullWidth
+                    select
+                    label="Selecionar moeda"
+                    value={configuracoes.moeda}
+                    onChange={(e) =>
+                      setConfiguracoes({
+                        ...configuracoes,
+                        moeda: e.target.value as "BRL" | "USD" | "EUR",
+                      })
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        color: "white",
+                        "& fieldset": {
+                          borderColor: "rgba(150, 84, 255, 0.3)",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "rgba(150, 84, 255, 0.5)",
+                        },
+                        "&.Mui-focused fieldset": { borderColor: "#9654FF" },
+                      },
+                      "& .MuiInputLabel-root": {
                         color: "rgba(255,255,255,0.7)",
+                      },
+                    }}
+                  >
+                    {moedas.map((moeda) => (
+                      <MenuItem key={moeda.value} value={moeda.value}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <span>{moeda.flag}</span>
+                          {moeda.label}
+                        </Box>
+                      </MenuItem>
+                    ))}
+                  </TextField>
+
+                  <Box sx={{ mt: 2 }}>
+                    <Typography
+                      variant="body2"
+                      color="rgba(255,255,255,0.7)"
+                      gutterBottom
+                    >
+                      Teste o formatador de moeda:
+                    </Typography>
+                    <CampoMoeda
+                      fullWidth
+                      label="Digite apenas números"
+                      value={valorTeste}
+                      onChange={setValorTeste}
+                      moeda={configuracoes.moeda}
+                      helperText={`Valor armazenado: ${valorTeste} centavos`}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </Grid>
+
+          {/* Tema e Aparência */}
+          <Grid item xs={12} md={6}>
+            <motion.div
+              variants={cardVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.3 }}
+            >
+              <Card
+                sx={{
+                  background:
+                    "linear-gradient(135deg, rgba(150, 84, 255, 0.15), rgba(150, 84, 255, 0.05))",
+                  border: "1px solid rgba(150, 84, 255, 0.3)",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 8px 32px rgba(150, 84, 255, 0.2)",
+                }}
+              >
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 2,
+                    }}
+                  >
+                    <ThemeIcon sx={{ color: "#9654FF" }} />
+                    <Typography variant="h6" color="white" fontWeight="bold">
+                      Tema e Aparência
+                    </Typography>
+                  </Box>
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={configuracoes.tema === "escuro"}
+                        onChange={(e) =>
+                          setConfiguracoes({
+                            ...configuracoes,
+                            tema: e.target.checked ? "escuro" : "claro",
+                          })
+                        }
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "#9654FF",
+                          },
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                            {
+                              backgroundColor: "#9654FF",
+                            },
+                        }}
+                      />
+                    }
+                    label={
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <span>
+                          {configuracoes.tema === "escuro" ? "🌙" : "☀️"}
+                        </span>
+                        <Typography color="white">
+                          {configuracoes.tema === "escuro"
+                            ? "Modo Escuro"
+                            : "Modo Claro"}
+                        </Typography>
+                      </Box>
+                    }
+                    sx={{ width: "100%" }}
+                  />
+
+                  <Box sx={{ mt: 2 }}>
+                    <Typography
+                      variant="body2"
+                      color="rgba(255,255,255,0.7)"
+                      gutterBottom
+                    >
+                      Prévia das cores:
+                    </Typography>
+                    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                      {[
+                        "#9654FF",
+                        "#7C2AFF",
+                        "#5D0FFF",
+                        "#F44336",
+                        "#4CAF50",
+                      ].map((cor) => (
+                        <Chip
+                          key={cor}
+                          label={cor}
+                          sx={{
+                            backgroundColor: `${cor}20`,
+                            color: cor,
+                            border: `1px solid ${cor}40`,
+                            fontSize: "0.75rem",
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </Grid>
+
+          {/* Idioma */}
+          <Grid item xs={12} md={6}>
+            <motion.div
+              variants={cardVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.4 }}
+            >
+              <Card
+                sx={{
+                  background:
+                    "linear-gradient(135deg, rgba(150, 84, 255, 0.15), rgba(150, 84, 255, 0.05))",
+                  border: "1px solid rgba(150, 84, 255, 0.3)",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 8px 32px rgba(150, 84, 255, 0.2)",
+                }}
+              >
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 2,
+                    }}
+                  >
+                    <LanguageIcon sx={{ color: "#9654FF" }} />
+                    <Typography variant="h6" color="white" fontWeight="bold">
+                      Idioma
+                    </Typography>
+                  </Box>
+
+                  <TextField
+                    fullWidth
+                    select
+                    label="Idioma da interface"
+                    value={configuracoes.idioma}
+                    onChange={(e) =>
+                      setConfiguracoes({
+                        ...configuracoes,
+                        idioma: e.target.value as "pt-BR" | "en-US" | "es-ES",
+                      })
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        color: "white",
+                        "& fieldset": {
+                          borderColor: "rgba(150, 84, 255, 0.3)",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "rgba(150, 84, 255, 0.5)",
+                        },
+                        "&.Mui-focused fieldset": { borderColor: "#9654FF" },
+                      },
+                      "& .MuiInputLabel-root": {
+                        color: "rgba(255,255,255,0.7)",
+                      },
+                    }}
+                  >
+                    {idiomas.map((idioma) => (
+                      <MenuItem key={idioma.value} value={idioma.value}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <span>{idioma.flag}</span>
+                          {idioma.label}
+                        </Box>
+                      </MenuItem>
+                    ))}
+                  </TextField>
+
+                  <Box sx={{ mt: 2 }}>
+                    <Alert
+                      severity="warning"
+                      sx={{
+                        backgroundColor: "rgba(255, 152, 0, 0.1)",
+                        color: "#FFB74D",
+                        border: "1px solid rgba(255, 152, 0, 0.2)",
+                        "& .MuiAlert-icon": { color: "#FFB74D" },
                       }}
                     >
-                      <Typography variant="body2">
-                        Nenhum limite configurado para este mês.
-                      </Typography>
-                      <Typography variant="caption">
-                        Configure limites para receber alertas quando
-                        ultrapassados.
-                      </Typography>
-                    </Box>
-                  ) : (
-                    <List>
-                      {limitesAtivos.map((limite) => {
-                        const gastoAtual = despesasAtuas[limite.categoria] || 0;
-                        const porcentagem =
-                          (gastoAtual / limite.valorLimite) * 100;
-                        const ultrapassado = gastoAtual > limite.valorLimite;
+                      Requer reinicialização para aplicar
+                    </Alert>
+                  </Box>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </Grid>
 
-                        return (
-                          <ListItem
-                            key={limite.id}
-                            sx={{
-                              borderRadius: 2,
-                              mb: 1,
-                              backgroundColor: ultrapassado
-                                ? "rgba(244, 67, 54, 0.1)"
-                                : porcentagem > 80
-                                  ? "rgba(255, 152, 0, 0.1)"
-                                  : "rgba(76, 175, 80, 0.1)",
-                              "&:hover": {
-                                backgroundColor: ultrapassado
-                                  ? "rgba(244, 67, 54, 0.2)"
-                                  : porcentagem > 80
-                                    ? "rgba(255, 152, 0, 0.2)"
-                                    : "rgba(76, 175, 80, 0.2)",
-                              },
-                            }}
-                          >
-                            <ListItemText
-                              primary={
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
-                                  }}
-                                >
-                                  <span>
-                                    {
-                                      ICONES_CATEGORIAS_DESPESA[
-                                        limite.categoria
-                                      ]
-                                    }
-                                  </span>
-                                  <Typography color="white" fontWeight="medium">
-                                    {NOMES_CATEGORIAS_DESPESA[limite.categoria]}
-                                  </Typography>
-                                </Box>
-                              }
-                              secondary={
-                                <Box sx={{ mt: 1 }}>
-                                  <Typography
-                                    variant="body2"
-                                    color="rgba(255,255,255,0.7)"
-                                  >
-                                    {formatarMoeda(gastoAtual)} de{" "}
-                                    {formatarMoeda(limite.valorLimite)} (
-                                    {porcentagem.toFixed(1)}%)
-                                  </Typography>
-                                  <Box
-                                    sx={{
-                                      width: "100%",
-                                      height: 4,
-                                      backgroundColor: "rgba(255,255,255,0.1)",
-                                      borderRadius: 2,
-                                      mt: 1,
-                                      overflow: "hidden",
-                                    }}
-                                  >
-                                    <Box
-                                      sx={{
-                                        width: `${Math.min(porcentagem, 100)}%`,
-                                        height: "100%",
-                                        backgroundColor: ultrapassado
-                                          ? "#F44336"
-                                          : porcentagem > 80
-                                            ? "#FF9800"
-                                            : "#4CAF50",
-                                        transition: "width 0.3s ease",
-                                      }}
-                                    />
-                                  </Box>
-                                </Box>
-                              }
-                            />
-                            <ListItemSecondaryAction>
-                              <IconButton
-                                edge="end"
-                                onClick={() => abrirDialogLimite(limite)}
-                                sx={{
-                                  color: "rgba(255,255,255,0.7)",
-                                  "&:hover": {
-                                    color: "#9654FF",
-                                    backgroundColor: "rgba(150, 84, 255, 0.1)",
-                                  },
-                                }}
-                              >
-                                <EditIcon />
-                              </IconButton>
-                            </ListItemSecondaryAction>
-                          </ListItem>
-                        );
-                      })}
-                    </List>
-                  )}
+          {/* Dados e Backup */}
+          <Grid item xs={12}>
+            <motion.div
+              variants={cardVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.5 }}
+            >
+              <Card
+                sx={{
+                  background:
+                    "linear-gradient(135deg, rgba(150, 84, 255, 0.15), rgba(150, 84, 255, 0.05))",
+                  border: "1px solid rgba(150, 84, 255, 0.3)",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 8px 32px rgba(150, 84, 255, 0.2)",
+                }}
+              >
+                <CardContent>
+                  <Typography
+                    variant="h6"
+                    color="white"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
+                    💾 Backup e Dados
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="rgba(255,255,255,0.7)"
+                    paragraph
+                  >
+                    Faça backup dos seus dados financeiros ou importe de outro
+                    dispositivo
+                  </Typography>
+
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        startIcon={<ExportIcon />}
+                        onClick={handleExportar}
+                        sx={{
+                          borderColor: "rgba(150, 84, 255, 0.5)",
+                          color: "#9654FF",
+                          "&:hover": {
+                            borderColor: "#9654FF",
+                            backgroundColor: "rgba(150, 84, 255, 0.1)",
+                          },
+                          py: 1.5,
+                        }}
+                      >
+                        Exportar Dados
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={handleImportar}
+                        style={{ display: "none" }}
+                        ref={inputFileRef}
+                      />
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        startIcon={<ImportIcon />}
+                        onClick={() => inputFileRef.current?.click()}
+                        sx={{
+                          borderColor: "rgba(150, 84, 255, 0.5)",
+                          color: "#9654FF",
+                          "&:hover": {
+                            borderColor: "#9654FF",
+                            backgroundColor: "rgba(150, 84, 255, 0.1)",
+                          },
+                          py: 1.5,
+                        }}
+                      >
+                        Importar Dados
+                      </Button>
+                    </Grid>
+                  </Grid>
+
+                  <Divider
+                    sx={{ my: 2, borderColor: "rgba(150, 84, 255, 0.2)" }}
+                  />
+
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography variant="caption" color="rgba(255,255,255,0.5)">
+                      Os dados são armazenados localmente no seu navegador
+                    </Typography>
+                  </Box>
                 </CardContent>
               </Card>
             </motion.div>
           </Grid>
         </Grid>
 
-        {/* Dialog para criar/editar limite */}
-        <Dialog
-          open={dialogLimiteAberto}
-          onClose={() => setDialogLimiteAberto(false)}
-          maxWidth="sm"
-          fullWidth
-          PaperProps={{
-            sx: {
-              background:
-                "linear-gradient(135deg, rgba(150, 84, 255, 0.1), rgba(150, 84, 255, 0.05))",
-              border: "1px solid rgba(150, 84, 255, 0.2)",
+        {/* Botão Salvar Fixo */}
+        <Fab
+          color="primary"
+          aria-label="salvar"
+          onClick={handleSalvarConfiguracoes}
+          disabled={carregando}
+          sx={{
+            position: "fixed",
+            bottom: { xs: 16, md: 24 },
+            right: { xs: 16, md: 24 },
+            background: sucesso
+              ? "linear-gradient(45deg, #4CAF50, #388E3C)"
+              : "linear-gradient(45deg, #9654FF, #7C2AFF)",
+            "&:hover": {
+              background: sucesso
+                ? "linear-gradient(45deg, #388E3C, #2E7D32)"
+                : "linear-gradient(45deg, #7C2AFF, #5D0FFF)",
             },
+            boxShadow: "0 8px 25px rgba(150, 84, 255, 0.4)",
+            transition: "all 0.3s ease",
+            ...(carregando && {
+              animation: "pulse 1.5s infinite",
+            }),
           }}
         >
-          <DialogTitle sx={{ color: "white" }}>
-            {limiteEditando ? "Editar Limite" : "Novo Limite"}
-          </DialogTitle>
-          <DialogContent>
-            <Box sx={{ pt: 1, "& > *": { mb: 2 } }}>
-              <TextField
-                fullWidth
-                select
-                label="Categoria"
-                value={formularioLimite.categoria}
-                onChange={(e) =>
-                  setFormularioLimite({
-                    ...formularioLimite,
-                    categoria: e.target.value as CategoriaDespesa,
-                  })
-                }
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    color: "white",
-                    "& fieldset": { borderColor: "rgba(150, 84, 255, 0.3)" },
-                    "&:hover fieldset": {
-                      borderColor: "rgba(150, 84, 255, 0.5)",
-                    },
-                    "&.Mui-focused fieldset": { borderColor: "#9654FF" },
-                  },
-                  "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
-                }}
-              >
-                {Object.entries(NOMES_CATEGORIAS_DESPESA).map(([key, nome]) => (
-                  <MenuItem key={key} value={key}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <span>
-                        {ICONES_CATEGORIAS_DESPESA[key as CategoriaDespesa]}
-                      </span>
-                      {nome}
-                    </Box>
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                fullWidth
-                label="Valor Limite (R$)"
-                type="number"
-                inputProps={{ step: "0.01", min: "0" }}
-                value={formularioLimite.valorLimite}
-                onChange={(e) =>
-                  setFormularioLimite({
-                    ...formularioLimite,
-                    valorLimite: e.target.value,
-                  })
-                }
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    color: "white",
-                    "& fieldset": { borderColor: "rgba(150, 84, 255, 0.3)" },
-                    "&:hover fieldset": {
-                      borderColor: "rgba(150, 84, 255, 0.5)",
-                    },
-                    "&.Mui-focused fieldset": { borderColor: "#9654FF" },
-                  },
-                  "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
-                }}
-              />
-
-              <TextField
-                fullWidth
-                select
-                label="Mês"
-                value={formularioLimite.mes}
-                onChange={(e) =>
-                  setFormularioLimite({
-                    ...formularioLimite,
-                    mes: Number(e.target.value),
-                  })
-                }
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    color: "white",
-                    "& fieldset": { borderColor: "rgba(150, 84, 255, 0.3)" },
-                    "&:hover fieldset": {
-                      borderColor: "rgba(150, 84, 255, 0.5)",
-                    },
-                    "&.Mui-focused fieldset": { borderColor: "#9654FF" },
-                  },
-                  "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
-                }}
-              >
-                {meses.map((mes, index) => (
-                  <MenuItem key={index} value={index}>
-                    {mes}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                fullWidth
-                label="Ano"
-                type="number"
-                value={formularioLimite.ano}
-                onChange={(e) =>
-                  setFormularioLimite({
-                    ...formularioLimite,
-                    ano: Number(e.target.value),
-                  })
-                }
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    color: "white",
-                    "& fieldset": { borderColor: "rgba(150, 84, 255, 0.3)" },
-                    "&:hover fieldset": {
-                      borderColor: "rgba(150, 84, 255, 0.5)",
-                    },
-                    "&.Mui-focused fieldset": { borderColor: "#9654FF" },
-                  },
-                  "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
-                }}
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => setDialogLimiteAberto(false)}
-              sx={{ color: "rgba(255,255,255,0.7)" }}
+          {carregando ? (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSalvarLimite}
-              variant="contained"
-              sx={{
-                background: "linear-gradient(45deg, #9654FF, #7C2AFF)",
-                "&:hover": {
-                  background: "linear-gradient(45deg, #7C2AFF, #5D0FFF)",
-                },
-              }}
+              <RefreshIcon />
+            </motion.div>
+          ) : sucesso ? (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              {limiteEditando ? "Atualizar" : "Criar"}
-            </Button>
-          </DialogActions>
-        </Dialog>
+              <CheckIcon />
+            </motion.div>
+          ) : (
+            <SaveIcon />
+          )}
+        </Fab>
 
         {/* Snackbar para mensagens */}
         <Snackbar
@@ -794,13 +681,28 @@ export default function Configuracoes() {
         >
           <Alert
             onClose={() => setMensagem("")}
-            severity={tipoMensagem}
-            sx={{ width: "100%" }}
+            severity="success"
+            sx={{
+              width: "100%",
+              backgroundColor: "rgba(76, 175, 80, 0.1)",
+              color: "#81C784",
+              border: "1px solid rgba(76, 175, 80, 0.2)",
+              "& .MuiAlert-icon": { color: "#81C784" },
+            }}
           >
             {mensagem}
           </Alert>
         </Snackbar>
       </Box>
+
+      <style>
+        {`
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+          }
+        `}
+      </style>
     </Box>
   );
 }
