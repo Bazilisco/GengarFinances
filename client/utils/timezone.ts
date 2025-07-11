@@ -42,7 +42,18 @@ export function formatarDataParaInput(data?: Date): string {
  * @returns String no formato YYYY-MM-DD da data atual de Brasília
  */
 export function obterDataAtualFormatada(): string {
-  return formatarDataParaInput(obterDataBrasilia());
+  const hoje = new Date();
+
+  // Obtém a data no timezone de Brasília (UTC-3)
+  const brasiliaOffset = -3 * 60; // -3 horas em minutos
+  const utc = hoje.getTime() + hoje.getTimezoneOffset() * 60000;
+  const brasilia = new Date(utc + brasiliaOffset * 60000);
+
+  const ano = brasilia.getFullYear();
+  const mes = String(brasilia.getMonth() + 1).padStart(2, "0");
+  const dia = String(brasilia.getDate()).padStart(2, "0");
+
+  return `${ano}-${mes}-${dia}`;
 }
 
 /**
