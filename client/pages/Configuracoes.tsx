@@ -534,8 +534,8 @@ export default function Configuracoes() {
             </motion.div>
           </Grid>
 
-          {/* Dados e Backup */}
-          <Grid item xs={12}>
+          {/* Exportar Dados */}
+          <Grid item xs={12} md={6}>
             <motion.div
               variants={cardVariants}
               initial="hidden"
@@ -549,86 +549,219 @@ export default function Configuracoes() {
                   border: "1px solid rgba(150, 84, 255, 0.3)",
                   backdropFilter: "blur(10px)",
                   boxShadow: "0 8px 32px rgba(150, 84, 255, 0.2)",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    color="white"
-                    fontWeight="bold"
-                    gutterBottom
+                <CardContent
+                  sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mb: 3,
+                    }}
                   >
-                    💾 Backup e Dados
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    color="rgba(255,255,255,0.7)"
-                    paragraph
-                  >
-                    Faça backup dos seus dados financeiros ou importe de outro
-                    dispositivo
-                  </Typography>
-
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        startIcon={<ExportIcon />}
-                        onClick={handleExportar}
-                        sx={{
-                          borderColor: "rgba(150, 84, 255, 0.5)",
-                          color: "#9654FF",
-                          "&:hover": {
-                            borderColor: "#9654FF",
-                            backgroundColor: "rgba(150, 84, 255, 0.1)",
-                          },
-                          py: 1.5,
-                        }}
-                      >
-                        Exportar Dados
-                      </Button>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <input
-                        type="file"
-                        accept=".json"
-                        onChange={handleImportar}
-                        style={{ display: "none" }}
-                        ref={inputFileRef}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 56,
+                        height: 56,
+                        borderRadius: "50%",
+                        background: "linear-gradient(135deg, #9654FF, #7C2AFF)",
+                        boxShadow: "0 8px 25px rgba(150, 84, 255, 0.3)",
+                      }}
+                    >
+                      <CloudDownloadIcon
+                        sx={{ color: "white", fontSize: 28 }}
                       />
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        startIcon={<ImportIcon />}
-                        onClick={() => inputFileRef.current?.click()}
-                        sx={{
-                          borderColor: "rgba(150, 84, 255, 0.5)",
-                          color: "#9654FF",
-                          "&:hover": {
-                            borderColor: "#9654FF",
-                            backgroundColor: "rgba(150, 84, 255, 0.1)",
-                          },
-                          py: 1.5,
-                        }}
-                      >
-                        Importar Dados
-                      </Button>
-                    </Grid>
-                  </Grid>
-
-                  <Divider
-                    sx={{ my: 2, borderColor: "rgba(150, 84, 255, 0.2)" }}
-                  />
-
-                  <Box sx={{ textAlign: "center" }}>
-                    <Typography variant="caption" color="rgba(255,255,255,0.5)">
-                      Os dados são armazenados localmente no seu navegador
+                    </Box>
+                    <Typography
+                      variant="h5"
+                      color="white"
+                      fontWeight="bold"
+                      sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
+                    >
+                      Exportar meus dados
                     </Typography>
                   </Box>
+
+                  <Typography
+                    variant="body1"
+                    color="rgba(255,255,255,0.7)"
+                    sx={{ mb: 4, flexGrow: 1, lineHeight: 1.6 }}
+                  >
+                    Você poderá restaurar seus ganhos, despesas e metas quando
+                    quiser.
+                  </Typography>
+
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    onClick={handleExportar} // Handler será adicionado manualmente depois
+                    sx={{
+                      background: "linear-gradient(45deg, #9654FF, #7C2AFF)",
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "1.1rem",
+                      py: 2,
+                      borderRadius: 3,
+                      textTransform: "none",
+                      boxShadow: "0 8px 25px rgba(150, 84, 255, 0.4)",
+                      "&:hover": {
+                        background: "linear-gradient(45deg, #7C2AFF, #5D0FFF)",
+                        boxShadow: "0 12px 35px rgba(150, 84, 255, 0.6)",
+                        transform: "translateY(-2px)",
+                      },
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    Salvar backup no meu dispositivo
+                  </Button>
                 </CardContent>
               </Card>
+            </motion.div>
+          </Grid>
+
+          {/* Importar Backup */}
+          <Grid item xs={12} md={6}>
+            <motion.div
+              variants={cardVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.6 }}
+            >
+              <Card
+                sx={{
+                  background:
+                    "linear-gradient(135deg, rgba(150, 84, 255, 0.15), rgba(150, 84, 255, 0.05))",
+                  border: "1px solid rgba(150, 84, 255, 0.3)",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 8px 32px rgba(150, 84, 255, 0.2)",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <CardContent
+                  sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mb: 3,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 56,
+                        height: 56,
+                        borderRadius: "50%",
+                        background: "linear-gradient(135deg, #B39DDB, #9575CD)",
+                        boxShadow: "0 8px 25px rgba(179, 157, 219, 0.3)",
+                      }}
+                    >
+                      <FolderOpenIcon sx={{ color: "white", fontSize: 28 }} />
+                    </Box>
+                    <Typography
+                      variant="h5"
+                      color="white"
+                      fontWeight="bold"
+                      sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
+                    >
+                      Importar backup
+                    </Typography>
+                  </Box>
+
+                  <Typography
+                    variant="body1"
+                    color="rgba(255,255,255,0.7)"
+                    sx={{ mb: 4, flexGrow: 1, lineHeight: 1.6 }}
+                  >
+                    Carregue um arquivo de backup para restaurar seus dados
+                    salvos.
+                  </Typography>
+
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={undefined} // onChange será adicionado manualmente depois
+                    style={{ display: "none" }}
+                    ref={inputFileRef}
+                  />
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    size="large"
+                    onClick={() => inputFileRef.current?.click()} // onClick será adicionado manualmente depois
+                    sx={{
+                      borderColor: "rgba(179, 157, 219, 0.6)",
+                      color: "#B39DDB",
+                      fontWeight: "bold",
+                      fontSize: "1.1rem",
+                      py: 2,
+                      borderRadius: 3,
+                      textTransform: "none",
+                      borderWidth: 2,
+                      "&:hover": {
+                        borderColor: "#B39DDB",
+                        backgroundColor: "rgba(179, 157, 219, 0.1)",
+                        color: "#D1C4E9",
+                        borderWidth: 2,
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 8px 25px rgba(179, 157, 219, 0.3)",
+                      },
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    Selecionar arquivo do meu computador
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </Grid>
+
+          {/* Informação de Segurança */}
+          <Grid item xs={12}>
+            <motion.div
+              variants={cardVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.7 }}
+            >
+              <Box
+                sx={{
+                  textAlign: "center",
+                  py: 3,
+                  px: 2,
+                  borderRadius: 3,
+                  background:
+                    "linear-gradient(135deg, rgba(150, 84, 255, 0.08), rgba(150, 84, 255, 0.03))",
+                  border: "1px solid rgba(150, 84, 255, 0.1)",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  color="rgba(255,255,255,0.6)"
+                  sx={{ mb: 1 }}
+                >
+                  🔒 Seus dados são armazenados localmente e criptografados
+                </Typography>
+                <Typography variant="caption" color="rgba(255,255,255,0.4)">
+                  Os backups contêm apenas seus dados financeiros pessoais
+                </Typography>
+              </Box>
             </motion.div>
           </Grid>
         </Grid>
