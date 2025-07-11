@@ -697,7 +697,7 @@ export default function Configuracoes() {
                   <input
                     type="file"
                     accept=".json"
-                    onChange={undefined} // onChange será adicionado manualmente depois
+                    onChange={handleImportar} // onChange será customizado manualmente depois se necessário
                     style={{ display: "none" }}
                     ref={inputFileRef}
                   />
