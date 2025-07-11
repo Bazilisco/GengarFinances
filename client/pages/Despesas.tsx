@@ -591,55 +591,47 @@ export default function Despesas() {
                               </Box>
                             </ListItemIcon>
 
-                            <ListItemText
-                              primary={
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                  }}
+                            <Box sx={{ flexGrow: 1 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  mb: 0.5,
+                                }}
+                              >
+                                <Typography color="white" fontWeight="medium">
+                                  {despesa.descricao}
+                                </Typography>
+                                <Typography
+                                  variant="h6"
+                                  color="#F44336"
+                                  fontWeight="bold"
                                 >
-                                  <Typography color="white" fontWeight="medium">
-                                    {despesa.descricao}
-                                  </Typography>
-                                  <Typography
-                                    variant="h6"
-                                    color="#F44336"
-                                    fontWeight="bold"
-                                  >
-                                    -{formatarMoeda(despesa.valor)}
-                                  </Typography>
-                                </Box>
-                              }
-                              secondary={
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
-                                    mt: 0.5,
-                                  }}
+                                  -{formatarMoeda(despesa.valor)}
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
+                                <span>
+                                  {ICONES_CATEGORIAS_DESPESA[despesa.categoria]}
+                                </span>
+                                <Typography
+                                  variant="caption"
+                                  color="rgba(255,255,255,0.7)"
                                 >
-                                  <span>
-                                    {
-                                      ICONES_CATEGORIAS_DESPESA[
-                                        despesa.categoria
-                                      ]
-                                    }
-                                  </span>
-                                  <Typography
-                                    variant="caption"
-                                    color="rgba(255,255,255,0.7)"
-                                  >
-                                    {despesa.categoria} •{" "}
-                                    {format(new Date(despesa.data), "dd MMM", {
-                                      locale: ptBR,
-                                    })}
-                                  </Typography>
-                                </Box>
-                              }
-                            />
+                                  {despesa.categoria} •{" "}
+                                  {format(new Date(despesa.data), "dd MMM", {
+                                    locale: ptBR,
+                                  })}
+                                </Typography>
+                              </Box>
+                            </Box>
 
                             <ListItemSecondaryAction>
                               <IconButton
