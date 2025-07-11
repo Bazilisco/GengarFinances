@@ -10,10 +10,10 @@
 export function obterDataBrasilia(): Date {
   const agora = new Date();
 
-  // Brasília é UTC-3 (pode ser UTC-2 durante horário de verão, mas vamos usar UTC-3 fixo)
-  // Para obter a data/hora atual de Brasília, subtraímos 3 horas do UTC
+  // Brasília é UTC-3
+  const brasiliaOffset = -3 * 60; // -3 horas em minutos
   const utc = agora.getTime() + agora.getTimezoneOffset() * 60000;
-  const brasilia = new Date(utc + -3 * 3600000);
+  const brasilia = new Date(utc + brasiliaOffset * 60000);
 
   return brasilia;
 }
