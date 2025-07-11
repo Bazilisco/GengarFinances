@@ -587,51 +587,47 @@ export default function Ganhos() {
                               </Box>
                             </ListItemIcon>
 
-                            <ListItemText
-                              primary={
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                  }}
+                            <Box sx={{ flexGrow: 1 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  mb: 0.5,
+                                }}
+                              >
+                                <Typography color="white" fontWeight="medium">
+                                  {ganho.descricao}
+                                </Typography>
+                                <Typography
+                                  variant="h6"
+                                  color="#4CAF50"
+                                  fontWeight="bold"
                                 >
-                                  <Typography color="white" fontWeight="medium">
-                                    {ganho.descricao}
-                                  </Typography>
-                                  <Typography
-                                    variant="h6"
-                                    color="#4CAF50"
-                                    fontWeight="bold"
-                                  >
-                                    +{formatarMoeda(ganho.valor)}
-                                  </Typography>
-                                </Box>
-                              }
-                              secondary={
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
-                                    mt: 0.5,
-                                  }}
+                                  +{formatarMoeda(ganho.valor)}
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
+                                <span>
+                                  {ICONES_CATEGORIAS_GANHO[ganho.categoria]}
+                                </span>
+                                <Typography
+                                  variant="caption"
+                                  color="rgba(255,255,255,0.7)"
                                 >
-                                  <span>
-                                    {ICONES_CATEGORIAS_GANHO[ganho.categoria]}
-                                  </span>
-                                  <Typography
-                                    variant="caption"
-                                    color="rgba(255,255,255,0.7)"
-                                  >
-                                    {ganho.categoria} •{" "}
-                                    {format(new Date(ganho.data), "dd MMM", {
-                                      locale: ptBR,
-                                    })}
-                                  </Typography>
-                                </Box>
-                              }
-                            />
+                                  {ganho.categoria} •{" "}
+                                  {format(new Date(ganho.data), "dd MMM", {
+                                    locale: ptBR,
+                                  })}
+                                </Typography>
+                              </Box>
+                            </Box>
 
                             <ListItemSecondaryAction>
                               <IconButton
