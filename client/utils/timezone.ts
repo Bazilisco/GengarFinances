@@ -10,44 +10,38 @@
 export function obterDataBrasilia(): Date {
   const agora = new Date();
 
-  // Brasília é UTC-3
-  const brasiliaOffset = -3 * 60; // -3 horas em minutos
-  const utc = agora.getTime() + agora.getTimezoneOffset() * 60000;
-  const brasilia = new Date(utc + brasiliaOffset * 60000);
+  // Criar uma nova data ajustada para Brasília (UTC-3)
+  const offsetBrasilia = -3 * 60; // UTC-3 em minutos
+  const offsetLocal = agora.getTimezoneOffset(); // offset local em minutos
+  const diferencaMinutos = offsetBrasilia - offsetLocal;
 
-  return brasilia;
+  return new Date(agora.getTime() + diferencaMinutos * 60000);
 }
 
 /**
- * Formata uma data para input tipo "date" (YYYY-MM-DD) no timezone de Brasília
- * @param data Data para formatar (opcional, usa data atual de Brasília se não fornecida)
- * @returns String no formato YYYY-MM-DD
+ * Obtém a data atual formatada para inputs HTML date (YYYY-MM-DD)
+ * @returns String no formato YYYY-MM-DD da data atual
  */
-export function formatarDataParaInput(data?: Date): string {
-  const dataParaFormatar = data || obterDataBrasilia();
+export function obterDataAtualFormatada(): string {
+  // Usar data local para inputs HTML date para evitar problemas de timezone
+  const hoje = new Date();
 
-  const ano = dataParaFormatar.getFullYear();
-  const mes = String(dataParaFormatar.getMonth() + 1).padStart(2, "0");
-  const dia = String(dataParaFormatar.getDate()).padStart(2, "0");
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoje.getDate()).padStart(2, "0");
 
   return `${ano}-${mes}-${dia}`;
 }
 
 /**
- * Obtém a data atual de Brasília formatada para input (YYYY-MM-DD)
- * @returns String no formato YYYY-MM-DD da data atual de Brasília
+ * Formata uma data para input tipo "date" (YYYY-MM-DD)
+ * @param data Data para formatar
+ * @returns String no formato YYYY-MM-DD
  */
-export function obterDataAtualFormatada(): string {
-  const hoje = new Date();
-
-  // Obtém a data no timezone de Brasília (UTC-3)
-  const brasiliaOffset = -3 * 60; // -3 horas em minutos
-  const utc = hoje.getTime() + hoje.getTimezoneOffset() * 60000;
-  const brasilia = new Date(utc + brasiliaOffset * 60000);
-
-  const ano = brasilia.getFullYear();
-  const mes = String(brasilia.getMonth() + 1).padStart(2, "0");
-  const dia = String(brasilia.getDate()).padStart(2, "0");
+export function formatarDataParaInput(data: Date): string {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
 
   return `${ano}-${mes}-${dia}`;
 }
