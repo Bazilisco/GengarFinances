@@ -33,7 +33,6 @@ const abas = [
   { path: "/despesas", label: "Despesas", icon: DespesasIcon },
   { path: "/extrato", label: "Extrato", icon: ExtratoIcon },
   { path: "/metas", label: "Metas", icon: MetasIcon },
-  { path: "/configuracoes", label: "Config", icon: ConfigIcon },
 ];
 
 export function NavegacaoPrincipal() {
