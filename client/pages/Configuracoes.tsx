@@ -65,6 +65,7 @@ export default function Configuracoes() {
   const [carregando, setCarregando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
   const [mensagem, setMensagem] = useState("");
+  const [modalSucessoAberto, setModalSucessoAberto] = useState(false);
 
   const moedas = [
     { value: "BRL", label: "Real Brasileiro (R$)", flag: "🇧🇷" },
