@@ -766,6 +766,117 @@ export default function Configuracoes() {
           </Grid>
         </Grid>
 
+        {/* Modal de Sucesso */}
+        <Dialog
+          open={modalSucessoAberto}
+          onClose={() => setModalSucessoAberto(false)}
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{
+            sx: {
+              background:
+                "linear-gradient(135deg, rgba(150, 84, 255, 0.15), rgba(150, 84, 255, 0.05))",
+              border: "1px solid rgba(150, 84, 255, 0.3)",
+              borderRadius: 4,
+              backdropFilter: "blur(20px)",
+            },
+          }}
+        >
+          <DialogContent sx={{ textAlign: "center", py: 6 }}>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, #4CAF50, #388E3C)",
+                  margin: "0 auto 24px auto",
+                  boxShadow: "0 8px 25px rgba(76, 175, 80, 0.4)",
+                }}
+              >
+                <CheckIcon sx={{ color: "white", fontSize: 40 }} />
+              </Box>
+            </motion.div>
+
+            <Typography
+              variant="h4"
+              color="white"
+              fontWeight="bold"
+              gutterBottom
+              sx={{ fontSize: { xs: "1.8rem", md: "2.2rem" } }}
+            >
+              Backup carregado com sucesso!
+            </Typography>
+
+            <Typography
+              variant="body1"
+              color="rgba(255,255,255,0.7)"
+              sx={{ mb: 4, lineHeight: 1.6 }}
+            >
+              Todos os seus dados foram restaurados e já estão disponíveis no
+              aplicativo.
+            </Typography>
+
+            <Box
+              sx={{ display: "flex", gap: 1, justifyContent: "center", mb: 2 }}
+            >
+              <Chip
+                label="✅ Ganhos"
+                sx={{
+                  backgroundColor: "rgba(76, 175, 80, 0.2)",
+                  color: "#81C784",
+                  border: "1px solid rgba(76, 175, 80, 0.3)",
+                }}
+              />
+              <Chip
+                label="✅ Despesas"
+                sx={{
+                  backgroundColor: "rgba(76, 175, 80, 0.2)",
+                  color: "#81C784",
+                  border: "1px solid rgba(76, 175, 80, 0.3)",
+                }}
+              />
+              <Chip
+                label="✅ Metas"
+                sx={{
+                  backgroundColor: "rgba(76, 175, 80, 0.2)",
+                  color: "#81C784",
+                  border: "1px solid rgba(76, 175, 80, 0.3)",
+                }}
+              />
+            </Box>
+          </DialogContent>
+
+          <DialogActions sx={{ justifyContent: "center", pb: 4 }}>
+            <Button
+              onClick={() => setModalSucessoAberto(false)}
+              variant="contained"
+              size="large"
+              sx={{
+                background: "linear-gradient(45deg, #9654FF, #7C2AFF)",
+                color: "white",
+                fontWeight: "bold",
+                px: 4,
+                py: 1.5,
+                borderRadius: 3,
+                textTransform: "none",
+                "&:hover": {
+                  background: "linear-gradient(45deg, #7C2AFF, #5D0FFF)",
+                },
+              }}
+            >
+              Continuar
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         {/* Botão Salvar Fixo */}
         <Fab
           color="primary"
